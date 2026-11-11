@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Smart Phishing Detection System
 ## Codebase & Server Architecture: Orang 2 (Web Server & Backend)
 
@@ -155,3 +156,7 @@ Untuk mendeploy frontend dan reverse-proxying API di server Linux (Ubuntu/Debian
 2. **Orang 3 (Infrastruktur Cloud & DevOps)**:
    - File konfigurasi Apache `apache/phishing-app.conf` dan struktur backend siap dijadikan service systemd (`/etc/systemd/system/phishing-backend.service`) atau di-containerize menggunakan Docker/Kubernetes.
 
+=======
+# phisingtest
+blabalabala
+>>>>>>> f322823c84f52a19d1a67b249f461676c878afe1
