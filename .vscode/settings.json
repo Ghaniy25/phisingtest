@@ -1,0 +1,13 @@
+{
+  "python.defaultInterpreterPath": "C:\\Python314\\python.exe",
+  "python.analysis.extraPaths": [
+    "C:\\Users\\asus\\AppData\\Roaming\\Python\\Python314\\site-packages",
+    "${workspaceFolder}"
+  ],
+  "python.autoComplete.extraPaths": [
+    "C:\\Users\\asus\\AppData\\Roaming\\Python\\Python314\\site-packages",
+    "${workspaceFolder}"
+  ],
+  "python.analysis.typeCheckingMode": "basic"
+}
+

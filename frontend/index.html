@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Phishing Detection System</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- TOP NAVIGATION / HEADER -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            Smart Phishing Detection System
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              Orang 2 Prototype
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400">Web Server & Intelligent Mock Classifier Engine</p>
+        </div>
+      </div>
+
+      <!-- Live API Status Indicator -->
+      <div class="flex items-center space-x-3">
+        <div id="apiStatusBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 transition-all duration-300">
+          <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="apiStatusText">Menghubungkan ke API...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+
+    <!-- HERO & URL INSPECTOR SECTION -->
+    <section class="bg-gradient-to-b from-slate-800/80 to-slate-800/40 border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm relative overflow-hidden">
+      <!-- Glow effect -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-3xl mx-auto text-center space-y-3 mb-6">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          Inspeksi & Analisis Keamanan URL
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base">
+          Deteksi indikator rekayasa sosial, manipulasi domain, anomali IP, dan pola phishing secara instan.
+        </p>
+      </div>
+
+      <!-- Inspector Input Form -->
+      <form id="urlForm" class="max-w-3xl mx-auto space-y-4">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-grow">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="link-2" class="w-5 h-5"></i>
+            </div>
+            <input
+              type="text"
+              id="urlInput"
+              required
+              placeholder="https://contoh-aplikasi-phishing.com/verify"
+              class="w-full pl-11 pr-4 py-3.5 bg-slate-900/90 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-inner font-mono-code"
+            />
+          </div>
+          <button
+            type="submit"
+            id="submitBtn"
+            class="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-medium rounded-xl text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/30 min-w-[170px]"
+          >
+            <i data-lucide="search" id="btnIcon" class="w-4 h-4"></i>
+            <span id="btnText">Periksa URL</span>
+            <!-- Spinner Icon (hidden by default) -->
+            <svg id="btnSpinner" class="hidden animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Quick Sample Badges -->
+        <div class="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
+          <span>Uji Coba Cepat:</span>
+          <button
+            type="button"
+            onclick="setSampleUrl('http://192.168.1.105/bank/login-verify.php')"
+            class="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors"
+          >
+            🔴 Phishing (IP + Keywords)
+          </button>
+          <button
+            type="button"
+            onclick="setSampleUrl('http://contoh-aplikasi-phishing.com/verify')"
+            class="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 transition-colors"
+          >
+            🟡 Suspicious (HTTP / Keyword)
+          </button>
+          <button
+            type="button"
+            onclick="setSampleUrl('https://portal.bankmandiri.co.id')"
+            class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors"
+          >
+            🟢 Safe (Legitimate)
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- RESULT BANNER & BREAKDOWN PANEL (Hidden by default) -->
+    <section id="resultSection" class="hidden transition-all duration-300 space-y-6">
+      <div id="resultCard" class="rounded-2xl border p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all">
+        
+        <!-- Header Banner: Verdict & Risk Score -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-700/50">
+          <div class="space-y-2">
+            <div class="flex items-center space-x-3">
+              <span id="badgeVerdict" class="px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm">
+                <!-- Dynamic text & icon -->
+              </span>
+              <span id="badgeScanId" class="text-xs font-mono-code text-slate-400 px-2 py-1 rounded bg-slate-900/60 border border-slate-700/50"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Target:</span>
+              <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer" class="text-sm font-mono-code font-medium text-slate-200 hover:text-blue-400 hover:underline break-all"></a>
+            </div>
+          </div>
+
+          <!-- Risk Score Meter Display -->
+          <div class="bg-slate-900/70 rounded-xl p-4 border border-slate-700/60 flex flex-col justify-center min-w-[240px]">
+            <div class="flex justify-between items-baseline mb-2">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tingkat Risiko</span>
+              <div class="text-right">
+                <span id="scoreValue" class="text-2xl font-extrabold tracking-tight">--</span>
+                <span class="text-xs text-slate-500">/ 100</span>
+              </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/50">
+              <div id="scoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakdown Grid Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <!-- Card: URL Length -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <i data-lucide="ruler" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-slate-400">Panjang URL</p>
+              <p id="featureUrlLength" class="text-base font-bold text-white mt-0.5">--</p>
+              <p id="featureUrlLengthHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+            </div>
+          </div>
+
+          <!-- Card: IP Usage -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconIpBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="network" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-slate-400">Penggunaan IP Address</p>
+              <p id="featureHasIp" class="text-base font-bold text-white mt-0.5">--</p>
+              <p id="featureHasIpHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+            </div>
+          </div>
+
+          <!-- Card: HTTPS Status -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconHttpsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="lock" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-slate-400">Protokol Keamanan</p>
+              <p id="featureHasHttps" class="text-base font-bold text-white mt-0.5">--</p>
+              <p id="featureHasHttpsHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+            </div>
+          </div>
+
+          <!-- Card: Keywords Detected -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconKeywordsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="key-round" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-slate-400">Kata Kunci Mencurigakan</p>
+              <div id="featureKeywordsList" class="flex flex-wrap gap-1 mt-1 text-xs">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Triggered Rules List -->
+        <div class="mt-6 pt-6 border-t border-slate-700/50">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+            <i data-lucide="file-check-2" class="w-4 h-4 text-blue-400"></i>
+            Aturan & Pola yang Terpicu (Triggered Rules)
+          </h4>
+          <ul id="rulesList" class="space-y-2 text-sm">
+            <!-- Dynamic rule items -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY METRIC CARDS -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-400"></i>
+          Ringkasan Statistik Sistem
+        </h3>
+        <button
+          onclick="fetchStats(); fetchHistory();"
+          class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60"
+        >
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          Segarkan Data
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Scans -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium">Total Pemindaian</span>
+            <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+          </div>
+          <div id="statTotal" class="text-2xl sm:text-3xl font-black text-white">0</div>
+        </div>
+
+        <!-- Safe Count -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium">Aman (Safe)</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div id="statSafe" class="text-2xl sm:text-3xl font-black text-emerald-400">0</div>
+        </div>
+
+        <!-- Suspicious Count -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium">Mencurigakan</span>
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div id="statSuspicious" class="text-2xl sm:text-3xl font-black text-amber-400">0</div>
+        </div>
+
+        <!-- Phishing Count -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-400 mb-2">
+            <span class="text-xs font-medium">Terindikasi Phishing</span>
+            <i data-lucide="skull" class="w-4 h-4 text-rose-400"></i>
+          </div>
+          <div id="statPhishing" class="text-2xl sm:text-3xl font-black text-rose-400">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT SCANS HISTORY TABLE WITH SEARCH, FILTER, EXPORT -->
+    <section class="bg-slate-800/60 border border-slate-700/60 rounded-2xl shadow-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="history" class="w-5 h-5 text-blue-400"></i>
+          <h3 class="text-base font-bold text-white">Riwayat Pemindaian Terakhir</h3>
+        </div>
+
+        <!-- Controls: Search, Filter, Export, Reset -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <!-- Search box -->
+          <div class="relative">
+            <input
+              type="text"
+              id="historySearchInput"
+              placeholder="Cari URL / ID..."
+              oninput="filterHistoryTable()"
+              class="pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-mono-code"
+            />
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+          </div>
+
+          <!-- Classification Filter -->
+          <select
+            id="historyFilterSelect"
+            onchange="filterHistoryTable()"
+            class="bg-slate-900 border border-slate-700 rounded-lg text-slate-300 py-1.5 px-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+          >
+            <option value="ALL">Semua Status</option>
+            <option value="PHISHING">🔴 Phishing</option>
+            <option value="SUSPICIOUS">🟡 Suspicious</option>
+            <option value="SAFE">🟢 Safe</option>
+          </select>
+
+          <!-- Export CSV Button -->
+          <button
+            onclick="exportHistoryToCsv()"
+            class="px-2.5 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-200 border border-slate-600/60 flex items-center gap-1 transition-colors"
+            title="Download CSV"
+          >
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            CSV
+          </button>
+
+          <!-- Reset / Clear Button -->
+          <button
+            onclick="confirmResetHistory()"
+            class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 transition-colors"
+            title="Reset ke sampel bawaan"
+          >
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-300">
+          <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 font-semibold border-b border-slate-700/60">
+            <tr>
+              <th scope="col" class="px-6 py-3.5">Scan ID</th>
+              <th scope="col" class="px-6 py-3.5">URL Target</th>
+              <th scope="col" class="px-6 py-3.5">Klasifikasi</th>
+              <th scope="col" class="px-6 py-3.5">Skor Risiko</th>
+              <th scope="col" class="px-6 py-3.5 text-right">Waktu</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody" class="divide-y divide-slate-700/40 font-normal">
+            <tr>
+              <td colspan="5" class="px-6 py-8 text-center text-slate-500">
+                Memuat riwayat pemindaian...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 py-6 mt-auto bg-slate-950/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-1">
+      <p>Smart Phishing Detection System &bull; Arsitektur Tim Orang 2 (Web Server & Backend)</p>
+      <p>FastAPI + Uvicorn &bull; Apache2 Reverse Proxy &bull; Responsive Vanilla JS Frontend</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT INTEGRATION -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Determine Base API URL
+    const API_BASE = window.location.origin.includes('http') && !window.location.origin.includes(':5500')
+      ? `${window.location.origin}/api/v1`
+      : 'http://127.0.0.1:8000/api/v1';
+
+    // Global in-memory cache for client-side filtering/export
+    let rawHistoryData = [];
+
+    // DOM Elements
+    const apiStatusBadge = document.getElementById('apiStatusBadge');
+    const apiStatusDot = document.getElementById('apiStatusDot');
+    const apiStatusText = document.getElementById('apiStatusText');
+    const urlForm = document.getElementById('urlForm');
+    const urlInput = document.getElementById('urlInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    // Quick sample loader
+    function setSampleUrl(url) {
+      urlInput.value = url;
+      urlInput.focus();
+    }
+
+    // Health Check on load
+    async function checkApiHealth() {
+      try {
+        const response = await fetch(`${API_BASE}/health`, { method: 'GET' });
+        if (response.ok) {
+          const data = await response.json();
+          apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          apiStatusText.textContent = 'API Connected';
+          apiStatusText.className = 'text-emerald-300 font-semibold';
+          apiStatusBadge.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300';
+        } else {
+          throw new Error('API Bad Status');
+        }
+      } catch (err) {
+        apiStatusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        apiStatusText.textContent = 'API Offline';
+        apiStatusText.className = 'text-rose-400 font-semibold';
+        apiStatusBadge.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300';
+      }
+    }
+
+    // Fetch and render Statistics
+    async function fetchStats() {
+      try {
+        const response = await fetch(`${API_BASE}/statistics`);
+        if (response.ok) {
+          const stats = await response.json();
+          document.getElementById('statTotal').textContent = stats.total_scans;
+          document.getElementById('statSafe').textContent = stats.safe_count;
+          document.getElementById('statSuspicious').textContent = stats.suspicious_count;
+          document.getElementById('statPhishing').textContent = stats.phishing_count;
+        }
+      } catch (err) {
+        console.error('Error fetching statistics:', err);
+      }
+    }
+
+    // Format ISO Date to human friendly string
+    function formatDate(isoStr) {
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
+               ' (' + d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ')';
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
+    // Badge styling helper
+    function getClassificationBadge(classification) {
+      if (classification === 'PHISHING') {
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> PHISHING
+                </span>`;
+      } else if (classification === 'SUSPICIOUS') {
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> SUSPICIOUS
+                </span>`;
+      } else {
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> SAFE
+                </span>`;
+      }
+    }
+
+    // Render Table items
+    function renderTableRows(items) {
+      const tbody = document.getElementById('historyTableBody');
+      if (!items || items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-6 text-center text-slate-500">Tidak ada data pemindaian yang cocok.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(item => `
+        <tr class="hover:bg-slate-700/30 transition-colors">
+          <td class="px-6 py-4 font-mono-code text-xs text-slate-400 whitespace-nowrap">
+            ${item.scan_id}
+          </td>
+          <td class="px-6 py-4 font-mono-code text-xs max-w-xs truncate text-slate-200" title="${item.url}">
+            ${item.url}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            ${getClassificationBadge(item.classification)}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="font-bold text-xs ${item.risk_score >= 80 ? 'text-rose-400' : (item.risk_score >= 40 ? 'text-amber-400' : 'text-emerald-400')}">
+              ${item.risk_score}%
+            </span>
+          </td>
+          <td class="px-6 py-4 text-xs text-slate-400 text-right whitespace-nowrap">
+            ${formatDate(item.scanned_at)}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Filter History Table based on search query & classification filter
+    function filterHistoryTable() {
+      const query = (document.getElementById('historySearchInput').value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('historyFilterSelect').value;
+
+      const filtered = rawHistoryData.filter(item => {
+        const matchesQuery = !query || 
+          item.url.toLowerCase().includes(query) || 
+          item.scan_id.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === 'ALL' || item.classification === statusFilter;
+        return matchesQuery && matchesStatus;
+      });
+
+      renderTableRows(filtered);
+    }
+
+    // Fetch History from API
+    async function fetchHistory() {
+      try {
+        const response = await fetch(`${API_BASE}/history?limit=50`);
+        if (response.ok) {
+          rawHistoryData = await response.json();
+          filterHistoryTable();
+        }
+      } catch (err) {
+        console.error('Error fetching history:', err);
+      }
+    }
+
+    // Export history to CSV file
+    function exportHistoryToCsv() {
+      if (!rawHistoryData || rawHistoryData.length === 0) {
+        alert('Tidak ada riwayat pemindaian untuk diekspor.');
+        return;
+      }
+
+      const headers = ['Scan ID', 'URL', 'Classification', 'Risk Score', 'Timestamp'];
+      const rows = rawHistoryData.map(item => [
+        item.scan_id,
+        `"${item.url.replace(/"/g, '""')}"`,
+        item.classification,
+        item.risk_score,
+        item.scanned_at
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + 
+        [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `phishing_scans_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Confirm and Reset History to Default Sample scans
+    async function confirmResetHistory() {
+      if (!confirm('Apakah Anda yakin ingin mengatur ulang riwayat pemindaian ke data contoh default?')) {
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/history/reset`, { method: 'POST' });
+        if (res.ok) {
+          await fetchStats();
+          await fetchHistory();
+        }
+      } catch (err) {
+        alert('Gagal mengatur ulang riwayat.');
+      }
+    }
+
+    // Render Detailed Scan Result Banner
+    function renderResult(data) {
+      const section = document.getElementById('resultSection');
+      const card = document.getElementById('resultCard');
+      const badgeVerdict = document.getElementById('badgeVerdict');
+      const badgeScanId = document.getElementById('badgeScanId');
+      const resultUrlLink = document.getElementById('resultUrlLink');
+      const scoreValue = document.getElementById('scoreValue');
+      const scoreBar = document.getElementById('scoreBar');
+
+      // Populate basic info
+      badgeScanId.textContent = data.scan_id;
+      resultUrlLink.textContent = data.url;
+      resultUrlLink.href = data.url.startsWith('http') ? data.url : `http://${data.url}`;
+      scoreValue.textContent = data.risk_score;
+      scoreBar.style.width = `${data.risk_score}%`;
+
+      // Theming based on Classification
+      if (data.classification === 'PHISHING') {
+        card.className = 'rounded-2xl border border-rose-500/40 bg-gradient-to-b from-rose-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-rose-950/40 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="shield-x" class="w-4 h-4 text-rose-400"></i> PHISHING (TERINDIKASI PHISHING)`;
+        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-rose-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-rose-500 shadow-sm shadow-rose-500/50';
+      } else if (data.classification === 'SUSPICIOUS') {
+        card.className = 'rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-amber-950/40 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> SUSPICIOUS (MENCURIGAKAN)`;
+        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-amber-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-amber-500 shadow-sm shadow-amber-500/50';
+      } else {
+        card.className = 'rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-emerald-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-emerald-950/40 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> SAFE (AMAN)`;
+        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-emerald-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-emerald-500 shadow-sm shadow-emerald-500/50';
+      }
+
+      // Feature: URL Length
+      document.getElementById('featureUrlLength').textContent = `${data.features.url_length} Karakter`;
+      document.getElementById('featureUrlLengthHint').textContent = data.features.url_length > 75 
+        ? '⚠️ Terlalu panjang (>75)' 
+        : '✓ Panjang normal';
+
+      // Feature: IP Usage
+      const ipBox = document.getElementById('iconIpBox');
+      if (data.features.has_ip) {
+        document.getElementById('featureHasIp').textContent = 'Terdeteksi IP';
+        document.getElementById('featureHasIpHint').textContent = '⚠️ Menghubungi IP langsung';
+        ipBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      } else {
+        document.getElementById('featureHasIp').textContent = 'Domain Valid';
+        document.getElementById('featureHasIpHint').textContent = '✓ Menggunakan nama host';
+        ipBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
+
+      // Feature: HTTPS Protocol
+      const httpsBox = document.getElementById('iconHttpsBox');
+      if (data.features.has_https) {
+        document.getElementById('featureHasHttps').textContent = 'HTTPS Aktif';
+        document.getElementById('featureHasHttpsHint').textContent = '✓ Enkripsi SSL aktif';
+        httpsBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      } else {
+        document.getElementById('featureHasHttps').textContent = 'HTTP (Insecure)';
+        document.getElementById('featureHasHttpsHint').textContent = '⚠️ Tidak terenkripsi';
+        httpsBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      }
+
+      // Feature: Keywords
+      const keywordsContainer = document.getElementById('featureKeywordsList');
+      const kwBox = document.getElementById('iconKeywordsBox');
+      if (data.features.suspicious_keywords_found && data.features.suspicious_keywords_found.length > 0) {
+        keywordsContainer.innerHTML = data.features.suspicious_keywords_found.map(kw => 
+          `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code border border-rose-500/30">${kw}</span>`
+        ).join('');
+        kwBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      } else {
+        keywordsContainer.innerHTML = `<span class="text-slate-400">Nihil / Bersih</span>`;
+        kwBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
+
+      // Triggered Rules
+      const rulesList = document.getElementById('rulesList');
+      if (data.rules_triggered && data.rules_triggered.length > 0) {
+        rulesList.innerHTML = data.rules_triggered.map(rule => `
+          <li class="flex items-start space-x-2 text-slate-300">
+            <span class="text-blue-400 mt-0.5 font-bold">&bull;</span>
+            <span class="font-mono-code text-xs">${rule}</span>
+          </li>
+        `).join('');
+      } else {
+        rulesList.innerHTML = `<li class="text-xs text-slate-500">Tidak ada anomali terdeteksi.</li>`;
+      }
+
+      // Re-trigger Lucide icon rendering
+      lucide.createIcons();
+
+      // Show Section with smooth scroll
+      section.classList.remove('hidden');
+      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Form Submit Handler
+    urlForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const targetUrl = urlInput.value.trim();
+      if (!targetUrl) return;
+
+      // Enter Loading State
+      submitBtn.disabled = true;
+      btnSpinner.classList.remove('hidden');
+      btnIcon.classList.add('hidden');
+      btnText.textContent = 'Menganalisis...';
+
+      try {
+        const response = await fetch(`${API_BASE}/analyze`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url: targetUrl })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.detail || 'Gagal menganalisis URL.');
+        }
+
+        const data = await response.json();
+        renderResult(data);
+
+        // Refresh stats and history tables immediately
+        await fetchStats();
+        await fetchHistory();
+
+      } catch (err) {
+        alert(`Terjadi kesalahan: ${err.message}`);
+      } finally {
+        // Reset Loading State
+        submitBtn.disabled = false;
+        btnSpinner.classList.add('hidden');
+        btnIcon.classList.remove('hidden');
+        btnText.textContent = 'Periksa URL';
+      }
+    });
+
+    // Auto-run on load
+    window.addEventListener('DOMContentLoaded', () => {
+      checkApiHealth();
+      fetchStats();
+      fetchHistory();
+    });
+  </script>
+</body>
+</html>
