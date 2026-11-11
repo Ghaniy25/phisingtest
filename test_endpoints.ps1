@@ -1,4 +1,4 @@
-﻿# PowerShell Endpoints Verification Script
+# PowerShell Endpoints Verification Script
 # Test all FastAPI endpoints with colored terminal output
 
 $baseUrl = "http://127.0.0.1:8000/api/v1"
@@ -58,3 +58,4 @@ Test-Endpoint -Name "Get Scan History (Limit 3)" -Method "GET" -Uri "$baseUrl/hi
 Write-Host "`n========================================================" -ForegroundColor Cyan
 Write-Host " All endpoint checks finished." -ForegroundColor Cyan
 Write-Host "========================================================" -ForegroundColor Cyan
+
