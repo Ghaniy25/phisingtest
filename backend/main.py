@@ -14,7 +14,7 @@ from backend.routes import health, analyze, history, stats
 
 app = FastAPI(
     title="Smart Phishing Detection API",
-    description="Orang 2 Web Server & Mock Classifier Backend for Phishing Threat Analysis",
+    description="Web Server & Mock Classifier Backend for Phishing Threat Analysis",
     version="1.0.0",
 )
 
@@ -49,7 +49,7 @@ def serve_dashboard():
         return FileResponse(index_file)
     return {
         "system": "Smart Phishing Detection System",
-        "role": "Orang 2 (Web Server & Backend)",
+        "role": "Web Server & Backend API",
         "status": "online",
         "api_v1_prefix": "/api/v1",
         "docs_url": "/docs",

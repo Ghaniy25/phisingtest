@@ -1,5 +1,5 @@
 [Unit]
-Description=FastAPI Uvicorn Service for Smart Phishing Detection Backend (Orang 2)
+Description=FastAPI Uvicorn Service for Smart Phishing Detection Backend
 After=network.target
 
 [Service]

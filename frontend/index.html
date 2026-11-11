@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,29 +30,31 @@
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
     body {
       font-family: 'Inter', sans-serif;
     }
+
     .font-mono-code {
       font-family: 'JetBrains Mono', monospace;
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+
+<body
+  class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
 
   <!-- TOP NAVIGATION / HEADER -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <div
+          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
           <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
         </div>
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
             Smart Phishing Detection System
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              Orang 2 Prototype
-            </span>
           </h1>
           <p class="text-xs text-slate-400">Web Server & Intelligent Mock Classifier Engine</p>
         </div>
@@ -59,7 +62,8 @@
 
       <!-- Live API Status Indicator -->
       <div class="flex items-center space-x-3">
-        <div id="apiStatusBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 transition-all duration-300">
+        <div id="apiStatusBadge"
+          class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 transition-all duration-300">
           <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span id="apiStatusText">Menghubungkan ke API...</span>
         </div>
@@ -71,7 +75,8 @@
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
 
     <!-- HERO & URL INSPECTOR SECTION -->
-    <section class="bg-gradient-to-b from-slate-800/80 to-slate-800/40 border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm relative overflow-hidden">
+    <section
+      class="bg-gradient-to-b from-slate-800/80 to-slate-800/40 border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm relative overflow-hidden">
       <!-- Glow effect -->
       <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -91,19 +96,11 @@
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <i data-lucide="link-2" class="w-5 h-5"></i>
             </div>
-            <input
-              type="text"
-              id="urlInput"
-              required
-              placeholder="https://contoh-aplikasi-phishing.com/verify"
-              class="w-full pl-11 pr-4 py-3.5 bg-slate-900/90 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-inner font-mono-code"
-            />
+            <input type="text" id="urlInput" required placeholder="https://contoh-aplikasi-phishing.com/verify"
+              class="w-full pl-11 pr-4 py-3.5 bg-slate-900/90 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-inner font-mono-code" />
           </div>
-          <button
-            type="submit"
-            id="submitBtn"
-            class="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-medium rounded-xl text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/30 min-w-[170px]"
-          >
+          <button type="submit" id="submitBtn"
+            class="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-medium rounded-xl text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/30 min-w-[170px]">
             <i data-lucide="search" id="btnIcon" class="w-4 h-4"></i>
             <span id="btnText">Periksa URL</span>
             <!-- Spinner Icon (hidden by default) -->
@@ -117,25 +114,16 @@
         <!-- Quick Sample Badges -->
         <div class="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
           <span>Uji Coba Cepat:</span>
-          <button
-            type="button"
-            onclick="setSampleUrl('http://192.168.1.105/bank/login-verify.php')"
-            class="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors"
-          >
+          <button type="button" onclick="setSampleUrl('http://192.168.1.105/bank/login-verify.php')"
+            class="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors">
             🔴 Phishing (IP + Keywords)
           </button>
-          <button
-            type="button"
-            onclick="setSampleUrl('http://contoh-aplikasi-phishing.com/verify')"
-            class="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 transition-colors"
-          >
+          <button type="button" onclick="setSampleUrl('http://contoh-aplikasi-phishing.com/verify')"
+            class="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 transition-colors">
             🟡 Suspicious (HTTP / Keyword)
           </button>
-          <button
-            type="button"
-            onclick="setSampleUrl('https://portal.bankmandiri.co.id')"
-            class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors"
-          >
+          <button type="button" onclick="setSampleUrl('https://portal.bankmandiri.co.id')"
+            class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors">
             🟢 Safe (Legitimate)
           </button>
         </div>
@@ -145,24 +133,28 @@
     <!-- RESULT BANNER & BREAKDOWN PANEL (Hidden by default) -->
     <section id="resultSection" class="hidden transition-all duration-300 space-y-6">
       <div id="resultCard" class="rounded-2xl border p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all">
-        
+
         <!-- Header Banner: Verdict & Risk Score -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-700/50">
           <div class="space-y-2">
             <div class="flex items-center space-x-3">
-              <span id="badgeVerdict" class="px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm">
+              <span id="badgeVerdict"
+                class="px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm">
                 <!-- Dynamic text & icon -->
               </span>
-              <span id="badgeScanId" class="text-xs font-mono-code text-slate-400 px-2 py-1 rounded bg-slate-900/60 border border-slate-700/50"></span>
+              <span id="badgeScanId"
+                class="text-xs font-mono-code text-slate-400 px-2 py-1 rounded bg-slate-900/60 border border-slate-700/50"></span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-xs text-slate-400">Target:</span>
-              <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer" class="text-sm font-mono-code font-medium text-slate-200 hover:text-blue-400 hover:underline break-all"></a>
+              <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer"
+                class="text-sm font-mono-code font-medium text-slate-200 hover:text-blue-400 hover:underline break-all"></a>
             </div>
           </div>
 
           <!-- Risk Score Meter Display -->
-          <div class="bg-slate-900/70 rounded-xl p-4 border border-slate-700/60 flex flex-col justify-center min-w-[240px]">
+          <div
+            class="bg-slate-900/70 rounded-xl p-4 border border-slate-700/60 flex flex-col justify-center min-w-[240px]">
             <div class="flex justify-between items-baseline mb-2">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tingkat Risiko</span>
               <div class="text-right">
@@ -172,7 +164,8 @@
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/50">
-              <div id="scoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+              <div id="scoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 0%">
+              </div>
             </div>
           </div>
         </div>
@@ -247,10 +240,8 @@
           <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-400"></i>
           Ringkasan Statistik Sistem
         </h3>
-        <button
-          onclick="fetchStats(); fetchHistory();"
-          class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60"
-        >
+        <button onclick="fetchStats(); fetchHistory();"
+          class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60">
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
           Segarkan Data
         </button>
@@ -297,7 +288,8 @@
 
     <!-- RECENT SCANS HISTORY TABLE WITH SEARCH, FILTER, EXPORT -->
     <section class="bg-slate-800/60 border border-slate-700/60 rounded-2xl shadow-xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div
+        class="px-6 py-4 border-b border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center space-x-2">
           <i data-lucide="history" class="w-5 h-5 text-blue-400"></i>
           <h3 class="text-base font-bold text-white">Riwayat Pemindaian Terakhir</h3>
@@ -307,22 +299,14 @@
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <!-- Search box -->
           <div class="relative">
-            <input
-              type="text"
-              id="historySearchInput"
-              placeholder="Cari URL / ID..."
-              oninput="filterHistoryTable()"
-              class="pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-mono-code"
-            />
+            <input type="text" id="historySearchInput" placeholder="Cari URL / ID..." oninput="filterHistoryTable()"
+              class="pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-mono-code" />
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
           </div>
 
           <!-- Classification Filter -->
-          <select
-            id="historyFilterSelect"
-            onchange="filterHistoryTable()"
-            class="bg-slate-900 border border-slate-700 rounded-lg text-slate-300 py-1.5 px-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
-          >
+          <select id="historyFilterSelect" onchange="filterHistoryTable()"
+            class="bg-slate-900 border border-slate-700 rounded-lg text-slate-300 py-1.5 px-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs">
             <option value="ALL">Semua Status</option>
             <option value="PHISHING">🔴 Phishing</option>
             <option value="SUSPICIOUS">🟡 Suspicious</option>
@@ -330,21 +314,17 @@
           </select>
 
           <!-- Export CSV Button -->
-          <button
-            onclick="exportHistoryToCsv()"
+          <button onclick="exportHistoryToCsv()"
             class="px-2.5 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-200 border border-slate-600/60 flex items-center gap-1 transition-colors"
-            title="Download CSV"
-          >
+            title="Download CSV">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             CSV
           </button>
 
           <!-- Reset / Clear Button -->
-          <button
-            onclick="confirmResetHistory()"
+          <button onclick="confirmResetHistory()"
             class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 transition-colors"
-            title="Reset ke sampel bawaan"
-          >
+            title="Reset ke sampel bawaan">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
             Reset
           </button>
@@ -377,7 +357,7 @@
   <!-- FOOTER -->
   <footer class="border-t border-slate-800 py-6 mt-auto bg-slate-950/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-1">
-      <p>Smart Phishing Detection System &bull; Arsitektur Tim Orang 2 (Web Server & Backend)</p>
+      <p>Smart Phishing Detection System &bull; Cloud Web Server & Security Analysis Platform</p>
       <p>FastAPI + Uvicorn &bull; Apache2 Reverse Proxy &bull; Responsive Vanilla JS Frontend</p>
     </div>
   </footer>
@@ -453,8 +433,8 @@
     function formatDate(isoStr) {
       try {
         const d = new Date(isoStr);
-        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
-               ' (' + d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ')';
+        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
+          ' (' + d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ')';
       } catch (e) {
         return isoStr;
       }
@@ -514,8 +494,8 @@
       const statusFilter = document.getElementById('historyFilterSelect').value;
 
       const filtered = rawHistoryData.filter(item => {
-        const matchesQuery = !query || 
-          item.url.toLowerCase().includes(query) || 
+        const matchesQuery = !query ||
+          item.url.toLowerCase().includes(query) ||
           item.scan_id.toLowerCase().includes(query);
         const matchesStatus = statusFilter === 'ALL' || item.classification === statusFilter;
         return matchesQuery && matchesStatus;
@@ -553,7 +533,7 @@
         item.scanned_at
       ]);
 
-      const csvContent = 'data:text/csv;charset=utf-8,' + 
+      const csvContent = 'data:text/csv;charset=utf-8,' +
         [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
 
       const encodedUri = encodeURI(csvContent);
@@ -621,8 +601,8 @@
 
       // Feature: URL Length
       document.getElementById('featureUrlLength').textContent = `${data.features.url_length} Karakter`;
-      document.getElementById('featureUrlLengthHint').textContent = data.features.url_length > 75 
-        ? '⚠️ Terlalu panjang (>75)' 
+      document.getElementById('featureUrlLengthHint').textContent = data.features.url_length > 75
+        ? '⚠️ Terlalu panjang (>75)'
         : '✓ Panjang normal';
 
       // Feature: IP Usage
@@ -653,7 +633,7 @@
       const keywordsContainer = document.getElementById('featureKeywordsList');
       const kwBox = document.getElementById('iconKeywordsBox');
       if (data.features.suspicious_keywords_found && data.features.suspicious_keywords_found.length > 0) {
-        keywordsContainer.innerHTML = data.features.suspicious_keywords_found.map(kw => 
+        keywordsContainer.innerHTML = data.features.suspicious_keywords_found.map(kw =>
           `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code border border-rose-500/30">${kw}</span>`
         ).join('');
         kwBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
@@ -735,4 +715,5 @@
     });
   </script>
 </body>
+
 </html>
