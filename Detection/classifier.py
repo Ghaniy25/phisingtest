@@ -103,10 +103,7 @@ def evaluate_rules_and_score(features: dict, domain_info: dict) -> dict:
 
     if ssl_status in ("Invalid / Self-Signed", "Expired", "invalid", "expired"):
         risk_score += 30
-        suspicious_details.append(f"sertifikat SSL bermasalah ({ssl_status})")
-    elif features["is_https"] == 1 and not ssl_valid:
-        risk_score += 15
-        suspicious_details.append(f"sertifikat SSL tidak dapat diverifikasi ({ssl_status})")
+        suspicious_details.append(f"sertifikat SSL tidak valid ({ssl_status})")
 
     # Technical verification status check
     if dns_resolved and ssl_valid and domain_age_status == "available":
@@ -144,8 +141,8 @@ def evaluate_rules_and_score(features: dict, domain_info: dict) -> dict:
             f"R-03: Domain memiliki kemiripan dengan domain resmi '{similar_to}' tetapi menggunakan ejaan berbeda"
         )
 
-    # Ensure unverified DNS or invalid/unverified SSL is never classified as SAFE (PRD Section 4)
-    if not dns_resolved or not ssl_valid:
+    # Ensure unresolved DNS or explicitly invalid/expired SSL is never classified as SAFE
+    if not dns_resolved or ssl_status in ("Invalid / Self-Signed", "Expired", "invalid", "expired"):
         risk_score = max(risk_score, 30)
 
     risk_score = min(100, risk_score)
@@ -182,12 +179,18 @@ def evaluate_rules_and_score(features: dict, domain_info: dict) -> dict:
         if technical_status == "inconclusive":
             reason += " Pemeriksaan teknis berstatus inconclusive (data domain/SSL tidak lengkap atau tidak valid)."
     else:
-        reason = (
-            f"Dinyatakan AMAN (skor risiko {risk_score}/100): tidak ditemukan pola berbahaya, "
-            "resolusi DNS berhasil, dan sertifikat SSL/TLS valid."
-        )
-        if domain_age_status != "available":
-            reason += " (Catatan: data usia domain RDAP tidak tersedia/inconclusive, namun DNS dan SSL valid)."
+        if ssl_valid:
+            reason = (
+                f"Dinyatakan AMAN (skor risiko {risk_score}/100): tidak ditemukan pola berbahaya, "
+                "resolusi DNS berhasil, dan sertifikat SSL/TLS valid."
+            )
+            if domain_age_status != "available":
+                reason += " (Catatan: data usia domain RDAP tidak tersedia/inconclusive, namun DNS dan SSL valid)."
+        else:
+            reason = (
+                f"Dinyatakan AMAN secara struktur & DNS (skor risiko {risk_score}/100): tidak ditemukan pola berbahaya "
+                "dan resolusi DNS berhasil. (Catatan: pemeriksaan aktif port 443 SSL/RDAP dibatasi jaringan/unavailable)."
+            )
 
     return {
         "classification": classification,

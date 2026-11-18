@@ -54,6 +54,8 @@ secrets/
 # Logs and databases
 *.log
 *.sqlite3
+deploy_update.tar.gz
+*.tar.gz
 backend/data/
 
 # Operating System Files

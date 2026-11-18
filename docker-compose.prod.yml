@@ -1,8 +1,5 @@
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: phisingtest-backend:latest
     container_name: phishing_detector_backend
     restart: unless-stopped
@@ -10,6 +7,7 @@ services:
       - "127.0.0.1:8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+      - LOCAL_DB_PATH=/app/data/local_history.sqlite3
       - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID:-}
       - FIRESTORE_COLLECTION=${FIRESTORE_COLLECTION:-phishing_scans}
       - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
@@ -18,7 +16,10 @@ services:
       - RATE_LIMIT_ANALYZE=${RATE_LIMIT_ANALYZE:-30}
       - RATE_LIMIT_HISTORY=${RATE_LIMIT_HISTORY:-60}
     volumes:
-      - phishing_data:/app/backend/data
+      - ./backend:/app/backend:ro
+      - ./Detection:/app/Detection:ro
+      - ./frontend:/app/frontend:ro
+      - phishing_data:/app/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 15s

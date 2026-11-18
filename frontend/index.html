@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Phishing Detection System</title>
+  <title>Smart Phishing Detection System — URL Threat Intelligence</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -14,14 +14,16 @@
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
           colors: {
-            brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              900: '#1e3a8a',
+            obsidian: {
+              950: '#040710',
+              900: '#090E1C',
+              800: '#10172A',
+              700: '#19233C',
             }
           }
         }
@@ -29,366 +31,481 @@
     };
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #040710;
+      background-image:
+        radial-gradient(at 12% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 48%),
+        radial-gradient(at 88% 4%, rgba(99, 102, 241, 0.12) 0px, transparent 48%),
+        radial-gradient(at 50% 100%, rgba(15, 23, 42, 0.5) 0px, transparent 60%);
+      background-attachment: fixed;
+      letter-spacing: -0.01em;
     }
 
-    .font-mono-code {
-      font-family: 'JetBrains Mono', monospace;
+    .glass-panel {
+      background: rgba(13, 20, 38, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .glass-card {
+      background: rgba(7, 11, 22, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .gauge-ring {
+      transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Subtle dark scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #040710;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
     }
   </style>
 </head>
 
-<body
-  class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- TOP NAVIGATION / HEADER -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
+  <!-- TOP NAVIGATION BAR -->
+  <header class="border-b border-white/[0.08] bg-obsidian-950/85 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3.5">
         <div
-          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-          <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+          class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/25 ring-1 ring-white/20 shrink-0">
+          <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
         </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-            Smart Phishing Detection System
-          </h1>
-          <p class="text-xs text-slate-400">Heuristic Lexical & Passive DNS/SSL Phishing Classifier</p>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">
+              Smart Phishing Detection
+            </h1>
+            <span
+              class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/25">
+              PRD v2.0
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">
+            Rule-Based URL Threat Intelligence &bull; 10-Feature Lexical, RDAP &amp; Passive SSL/TLS
+          </p>
         </div>
       </div>
 
-      <!-- Live API Status Indicator -->
-      <div class="flex items-center space-x-3">
+      <!-- Right Action Bar: Team Modal Button, Docs & Live API Status -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <button type="button" onclick="openTeamModal()"
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 hover:text-white bg-gradient-to-r from-indigo-500/15 to-blue-500/15 hover:from-indigo-500/25 hover:to-blue-500/25 border border-indigo-500/30 transition-all cursor-pointer shadow-sm"
+          title="Lihat Anggota Kelompok Pengembang">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span>Tim Kami</span>
+          <span
+            class="px-1.5 py-0.2 rounded-md text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/20">4</span>
+        </button>
+
+        <a href="/docs" target="_blank" rel="noopener noreferrer"
+          class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.08] transition-colors">
+          <i data-lucide="code-2" class="w-3.5 h-3.5 text-blue-400"></i>
+          <span>API Docs</span>
+        </a>
+
         <div id="apiStatusBadge"
-          class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 border border-slate-700 text-slate-300 transition-all duration-300">
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 border border-white/10 text-slate-300 transition-all duration-300">
           <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span id="apiStatusText">Menghubungkan ke API...</span>
+          <span id="apiStatusText">Connecting...</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN WRAPPER -->
+  <!-- MAIN CONTENT CONTAINER -->
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
 
-    <!-- HERO & URL INSPECTOR SECTION -->
+    <!-- COMMAND CENTER: URL SCANNER HERO -->
     <section
-      class="bg-gradient-to-b from-slate-800/80 to-slate-800/40 border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm relative overflow-hidden">
-      <!-- Glow effect -->
-      <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="max-w-3xl mx-auto text-center space-y-3 mb-6">
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-          Inspeksi & Analisis Keamanan URL
-        </h2>
-        <p class="text-slate-400 text-sm sm:text-base">
-          Deteksi indikator rekayasa sosial, manipulasi domain, anomali IP, dan pola phishing secara instan.
-        </p>
+      class="glass-panel border border-white/[0.09] rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <div
+        class="absolute -top-32 left-1/2 -translate-x-1/2 w-[560px] h-56 bg-blue-600/10 rounded-full blur-3xl pointer-events-none">
       </div>
 
-      <!-- Inspector Input Form -->
-      <form id="urlForm" class="max-w-3xl mx-auto space-y-4">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <div class="relative flex-grow">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <i data-lucide="link-2" class="w-5 h-5"></i>
-            </div>
-            <input type="text" id="urlInput" required placeholder="https://contoh-aplikasi-phishing.com/verify"
-              class="w-full pl-11 pr-4 py-3.5 bg-slate-900/90 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all shadow-inner font-mono-code" />
-          </div>
-          <button type="submit" id="submitBtn"
-            class="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-medium rounded-xl text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-600/30 min-w-[170px]">
-            <i data-lucide="search" id="btnIcon" class="w-4 h-4"></i>
-            <span id="btnText">Periksa URL</span>
-            <!-- Spinner Icon (hidden by default) -->
-            <svg id="btnSpinner" class="hidden animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Quick Sample Badges -->
-        <div class="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
-          <span>Uji Coba Cepat:</span>
-          <button type="button" onclick="setSampleUrl('http://192.168.1.50/login-bca@verify.com')"
-            class="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors">
-            🔴 Phishing (IP + @)
-          </button>
-          <button type="button" onclick="setSampleUrl('http://update-akun.login.verify.contoh-domain.com')"
-            class="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 transition-colors">
-            🟡 Suspicious (Subdomain + HTTP)
-          </button>
-          <button type="button" onclick="setSampleUrl('https://www.google.com')"
-            class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors">
-            🟢 Safe (Legitimate)
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <!-- RESULT BANNER & BREAKDOWN PANEL (Hidden by default) -->
-    <section id="resultSection" class="hidden transition-all duration-300 space-y-6">
-      <div id="resultCard" class="rounded-2xl border p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all">
-
-        <!-- Header Banner: Verdict & Risk Score -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-700/50">
-          <div class="space-y-2">
-            <div class="flex items-center space-x-3">
-              <span id="badgeVerdict"
-                class="px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm">
-                <!-- Dynamic text & icon -->
-              </span>
-              <span id="badgeScanId"
-                class="text-xs font-mono-code text-slate-400 px-2 py-1 rounded bg-slate-900/60 border border-slate-700/50"></span>
-              <span id="badgeTechStatus"
-                class="text-xs font-mono-code text-slate-300 px-2 py-1 rounded bg-slate-800 border border-slate-700"></span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-400">Target:</span>
-              <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer"
-                class="text-sm font-mono-code font-medium text-slate-200 hover:text-blue-400 hover:underline break-all"></a>
-            </div>
-            <p id="resultReasonText" class="text-xs text-slate-300 pt-1"></p>
-          </div>
-
-          <!-- Risk Score Meter Display -->
+      <div class="w-full relative">
+        <div class="mb-6 space-y-2.5">
           <div
-            class="bg-slate-900/70 rounded-xl p-4 border border-slate-700/60 flex flex-col justify-center min-w-[240px]">
-            <div class="flex justify-between items-baseline mb-2">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tingkat Risiko</span>
-              <div class="text-right">
-                <span id="scoreValue" class="text-2xl font-extrabold tracking-tight">--</span>
-                <span class="text-xs text-slate-500">/ 100</span>
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-blue-400 bg-blue-500/10 border border-blue-500/25">
+            <i data-lucide="radar" class="w-3.5 h-3.5"></i>
+            <span>Real-Time URL Security Inspector</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+            Inspeksi Keamanan &amp; Reputasi URL
+          </h2>
+          <p class="text-sm sm:text-base text-slate-400 max-w-4xl leading-relaxed">
+            Evaluasi otomatis 10 fitur deteksi &amp; 5 aturan klasifikasi PRD (<span class="font-mono text-slate-300">R-01</span> s/d <span class="font-mono text-slate-300">R-05</span>) untuk mendeteksi indikator manipulasi domain, anomali IP, dan pola phishing secara instan.
+          </p>
+        </div>
+
+        <!-- Scanner Form -->
+        <form id="urlForm" class="space-y-3">
+          <div
+            class="flex flex-col sm:flex-row gap-2.5 p-1.5 rounded-2xl bg-obsidian-950/95 border border-white/[0.12] focus-within:border-blue-500/80 focus-within:ring-4 focus-within:ring-blue-500/15 transition-all shadow-inner">
+            <div class="relative flex-grow flex items-center">
+              <div class="pl-3.5 pr-2.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="globe" class="w-5 h-5 text-blue-400"></i>
+              </div>
+              <input type="text" id="urlInput" required autocomplete="off" spellcheck="false"
+                placeholder="Masukkan URL untuk dianalisis (contoh: https://www.google.com atau domain target)"
+                class="w-full py-3 pr-9 bg-transparent text-white placeholder-slate-500 focus:outline-none text-sm font-mono" />
+              <button type="button" id="clearInputBtn" onclick="clearUrlInput()"
+                class="hidden absolute right-2.5 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                title="Bersihkan input">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <button type="submit" id="submitBtn"
+              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.99] text-white font-semibold rounded-xl text-sm transition-all duration-150 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 min-w-[170px] cursor-pointer disabled:opacity-60">
+              <i data-lucide="scan-search" id="btnIcon" class="w-4 h-4"></i>
+              <span id="btnText">Analisis URL</span>
+              <svg id="btnSpinner" class="hidden animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Inline Validation / Error Banner (Hidden by default) -->
+          <div id="errorAlertBox"
+            class="hidden flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-rose-950/75 border border-rose-500/35 text-rose-200 text-xs animate-fade-in-up">
+            <div class="flex items-center gap-2.5">
+              <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400 shrink-0"></i>
+              <span id="errorAlertText">Terjadi kesalahan validasi URL.</span>
+            </div>
+            <button type="button" onclick="hideErrorAlert()" class="text-rose-400 hover:text-white cursor-pointer">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE THREAT ASSESSMENT & 10-FEATURE MATRIX (Hidden until scan) -->
+    <section id="resultSection" class="hidden space-y-6">
+      <div id="resultCard"
+        class="rounded-2xl border border-white/10 glass-panel p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all">
+
+        <!-- TOP EXECUTIVE SUMMARY: RADIAL GAUGE + VERDICT + URL ANATOMY -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-7 border-b border-white/[0.08] items-stretch">
+
+          <!-- Radial Risk Score Gauge (Cols 1-3) -->
+          <div
+            class="lg:col-span-3 flex flex-col items-center justify-between p-5 rounded-2xl glass-card border border-white/[0.08]">
+            <div class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Indeks Risiko</div>
+            <div class="relative w-32 h-32 flex items-center justify-center my-2">
+              <svg class="w-32 h-32 -rotate-90 transform" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" stroke="currentColor" stroke-width="10" fill="transparent"
+                  class="text-slate-800/90" />
+                <circle id="gaugeCircle" cx="60" cy="60" r="50" stroke="currentColor" stroke-width="10"
+                  stroke-linecap="round" fill="transparent" stroke-dasharray="314.16" stroke-dashoffset="314.16"
+                  class="gauge-ring text-emerald-500" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="scoreValue" class="text-3xl font-extrabold tracking-tight tabular-nums text-white">0</span>
+                <span class="text-[11px] text-slate-400 font-mono">dari 100</span>
               </div>
             </div>
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/50">
-              <div id="scoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 0%">
+            <!-- Linear bar indicator under gauge -->
+            <div class="w-full">
+              <div class="w-full bg-slate-800/90 rounded-full h-1.5 overflow-hidden">
+                <div id="scoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 0%">
+                </div>
               </div>
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1.5">
+                <span class="text-emerald-400/90">0-29 Aman</span>
+                <span class="text-amber-400/90">30-59 Waspada</span>
+                <span class="text-rose-400/90">60+ Phish</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verdict Details & Target Breakdown (Cols 4-12) -->
+          <div class="lg:col-span-9 flex flex-col justify-between space-y-4">
+            <!-- Top Badge Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span id="badgeVerdict"
+                  class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold tracking-wide uppercase inline-flex items-center gap-2 shadow-sm">
+                </span>
+                <span id="badgeTechStatus"
+                  class="text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-800/90 border border-white/10 text-slate-300 inline-flex items-center gap-1.5">
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+                <span id="badgeScanId"
+                  class="px-2.5 py-1 rounded-lg glass-card border border-white/[0.08] text-slate-300"></span>
+                <span id="badgeScanTime"
+                  class="hidden sm:inline-block px-2.5 py-1 rounded-lg glass-card border border-white/[0.08] text-slate-400"></span>
+              </div>
+            </div>
+
+            <!-- Inspected URL & Anatomy Box -->
+            <div class="p-4 rounded-xl glass-card border border-white/[0.08] space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-grow">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                    URL Target yang Diperiksa
+                  </div>
+                  <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer"
+                    class="text-xs sm:text-sm font-mono font-semibold text-blue-300 hover:text-blue-200 hover:underline break-all block"></a>
+                </div>
+                <button type="button" onclick="copyInspectedUrl()"
+                  class="shrink-0 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Salin URL Target">
+                  <i data-lucide="copy" class="w-3.5 h-3.5 text-blue-400"></i>
+                  <span id="copyUrlText">Salin URL</span>
+                </button>
+              </div>
+
+              <!-- URL Anatomy Chips -->
+              <div id="urlAnatomyBar" class="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.06] text-[11px] font-mono">
+                <!-- Populated dynamically: Scheme, Hostname, Registrable Domain, Resolved IP -->
+              </div>
+            </div>
+
+            <!-- Executive Reason Box -->
+            <div class="p-4 rounded-xl bg-white/[0.025] border border-white/[0.07] space-y-1.5">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-400"></i>
+                Kesimpulan Evaluasi Rule-Based
+              </div>
+              <p id="resultReasonText" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
             </div>
           </div>
         </div>
 
-        <!-- Breakdown Grid Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <!-- Card 1: URL Length & Hyphen Count -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconLengthBox" class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <i data-lucide="ruler" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Panjang URL & Tanda Hubung</p>
-              <p id="featureUrlLength" class="text-base font-bold text-white mt-0.5">--</p>
-              <p id="featureHyphenHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 2: Host Anomalies (IP & @) -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconIpBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="network" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Anomali Host (IP & @)</p>
-              <p id="featureHostAnomaly" class="text-sm font-bold text-white mt-0.5">--</p>
-              <p id="featureHostnameHint" class="text-[11px] text-slate-400 mt-0.5 font-mono-code truncate"></p>
+        <!-- 10-FEATURE PRD TELEMETRY MATRIX (2 Rows x 5 Cards on Desktop) -->
+        <div class="mt-7">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-blue-400"></i>
+              Matriks Ekstraksi 10 Fitur Deteksi PRD
+            </h3>
+            <div id="featureRiskSummaryPill"
+              class="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-lg bg-slate-800/80 border border-white/10 text-slate-300">
+              10 Parameter Dievaluasi
             </div>
           </div>
 
-          <!-- Card 3: Subdomain & HTTPS Status -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconHttpsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="lock" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Subdomain & Protokol</p>
-              <p id="featureHasHttps" class="text-base font-bold text-white mt-0.5">--</p>
-              <p id="featureSubdomainHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 4: DNS & SSL Status -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconDnsSslBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="globe-lock" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Status DNS & Sertifikat SSL</p>
-              <p id="domainDnsSslStatus" class="text-sm font-bold text-white mt-0.5">--</p>
-              <p id="domainIpExpiryHint" class="text-[11px] text-slate-400 mt-0.5 font-mono-code truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 5: Domain Age (RDAP) -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconDomainAgeBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="calendar-clock" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Usia Domain (RDAP)</p>
-              <p id="featureDomainAge" class="text-sm font-bold text-white mt-0.5">--</p>
-              <p id="featureDomainAgeHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 6: Domain Similarity -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconSimilarityBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="copy-slash" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Kemiripan Domain Resmi</p>
-              <p id="featureSimilarity" class="text-sm font-bold text-white mt-0.5">--</p>
-              <p id="featureSimilarityHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 7: URL Shortening -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconShortenerBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="Minimize-2" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Layanan URL Shortener</p>
-              <p id="featureShortener" class="text-sm font-bold text-white mt-0.5">--</p>
-              <p id="featureShortenerHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
-            </div>
-          </div>
-
-          <!-- Card 8: Suspicious Keywords -->
-          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div id="iconKeywordsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-              <i data-lucide="key-round" class="w-5 h-5"></i>
-            </div>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-slate-400">Kata Kunci Mencurigakan</p>
-              <div id="featureKeywordsList" class="flex flex-wrap gap-1 mt-1 text-xs">--</div>
-            </div>
+          <div id="featureMatrixGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+            <!-- Dynamically populated with 10 structured feature cards -->
           </div>
         </div>
 
-        <!-- Triggered Rules List -->
-        <div class="mt-6 pt-6 border-t border-slate-700/50">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-            <i data-lucide="file-check-2" class="w-4 h-4 text-blue-400"></i>
-            Aturan & Pola yang Terpicu (Triggered Rules)
-          </h4>
-          <ul id="rulesList" class="space-y-2 text-sm">
-            <!-- Dynamic rule items -->
-          </ul>
+        <!-- TRIGGERED PRD RULES (R-01 .. R-05) -->
+        <div class="mt-7 pt-6 border-t border-white/[0.08]">
+          <div class="flex items-center justify-between mb-3.5">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i>
+              Keputusan Aturan Klasifikasi (PRD Rules R-01 s/d R-05)
+            </h4>
+            <span id="triggeredRulesCountBadge" class="text-[11px] font-mono text-slate-400"></span>
+          </div>
+          <div id="rulesList" class="grid grid-cols-1 gap-2.5">
+            <!-- Dynamic structured rule cards -->
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SUMMARY METRIC CARDS -->
-    <section>
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-400"></i>
-          Ringkasan Statistik Sistem
-        </h3>
-        <button onclick="fetchStats(); fetchHistory();"
-          class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60">
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          Segarkan Data
+    <!-- KPI ANALYTICS SUMMARY (4 Metric Cards with Distribution Bars) -->
+    <section class="space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-5 h-5 text-blue-400"></i>
+            Statistik &amp; Distribusi Ancaman
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Agregasi real-time dari database riwayat pemeriksaan URL</p>
+        </div>
+        <button type="button" id="refreshDataBtn" onclick="refreshDashboardData()"
+          class="text-xs font-semibold text-slate-200 hover:text-white flex items-center gap-1.5 transition-all px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.09] disabled:opacity-50 cursor-pointer shadow-sm">
+          <span id="refreshDataIconWrap" class="inline-flex items-center justify-center">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-blue-400"></i>
+          </span>
+          <span id="refreshDataText">Segarkan Data</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total Scans -->
-        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-medium">Total Pemindaian</span>
-            <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+        <div class="glass-panel border border-white/[0.08] rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between text-slate-400 mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider">Total Pemindaian</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+            </div>
           </div>
-          <div id="statTotal" class="text-2xl sm:text-3xl font-black text-white">0</div>
+          <div class="flex items-baseline justify-between">
+            <div id="statTotal" class="text-3xl font-extrabold text-white tabular-nums">0</div>
+            <span class="text-xs font-mono font-semibold text-blue-400">100%</span>
+          </div>
+          <div class="w-full bg-slate-800/80 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div class="bg-blue-500 h-full rounded-full w-full"></div>
+          </div>
         </div>
 
         <!-- Safe Count -->
-        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-medium">Aman (Safe)</span>
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+        <div class="glass-panel border border-white/[0.08] rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between text-slate-400 mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider">Aman (SAFE)</span>
+            <div
+              class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            </div>
           </div>
-          <div id="statSafe" class="text-2xl sm:text-3xl font-black text-emerald-400">0</div>
+          <div class="flex items-baseline justify-between">
+            <div id="statSafe" class="text-3xl font-extrabold text-emerald-400 tabular-nums">0</div>
+            <span id="statSafePct" class="text-xs font-mono font-semibold text-emerald-400/80">0%</span>
+          </div>
+          <div class="w-full bg-slate-800/80 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div id="statSafeBar" class="bg-emerald-500 h-full rounded-full transition-all duration-500"
+              style="width: 0%"></div>
+          </div>
         </div>
 
         <!-- Suspicious Count -->
-        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-medium">Mencurigakan</span>
-            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+        <div class="glass-panel border border-white/[0.08] rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between text-slate-400 mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider">Mencurigakan</span>
+            <div
+              class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+            </div>
           </div>
-          <div id="statSuspicious" class="text-2xl sm:text-3xl font-black text-amber-400">0</div>
+          <div class="flex items-baseline justify-between">
+            <div id="statSuspicious" class="text-3xl font-extrabold text-amber-400 tabular-nums">0</div>
+            <span id="statSuspiciousPct" class="text-xs font-mono font-semibold text-amber-400/80">0%</span>
+          </div>
+          <div class="w-full bg-slate-800/80 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div id="statSuspiciousBar" class="bg-amber-500 h-full rounded-full transition-all duration-500"
+              style="width: 0%"></div>
+          </div>
         </div>
 
         <!-- Phishing Count -->
-        <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-5 shadow-sm">
-          <div class="flex items-center justify-between text-slate-400 mb-2">
-            <span class="text-xs font-medium">Terindikasi Phishing</span>
-            <i data-lucide="skull" class="w-4 h-4 text-rose-400"></i>
+        <div class="glass-panel border border-white/[0.08] rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between text-slate-400 mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider">Terindikasi Phishing</span>
+            <div class="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i>
+            </div>
           </div>
-          <div id="statPhishing" class="text-2xl sm:text-3xl font-black text-rose-400">0</div>
+          <div class="flex items-baseline justify-between">
+            <div id="statPhishing" class="text-3xl font-extrabold text-rose-400 tabular-nums">0</div>
+            <span id="statPhishingPct" class="text-xs font-mono font-semibold text-rose-400/80">0%</span>
+          </div>
+          <div class="w-full bg-slate-800/80 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div id="statPhishingBar" class="bg-rose-500 h-full rounded-full transition-all duration-500"
+              style="width: 0%"></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- RECENT SCANS HISTORY TABLE WITH SEARCH, FILTER, EXPORT -->
-    <section class="bg-slate-800/60 border border-slate-700/60 rounded-2xl shadow-xl overflow-hidden">
+    <!-- SCAN HISTORY TABLE -->
+    <section class="glass-panel border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden">
       <div
-        class="px-6 py-4 border-b border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="history" class="w-5 h-5 text-blue-400"></i>
-          <h3 class="text-base font-bold text-white">Riwayat Pemindaian Terakhir</h3>
+        class="px-6 py-5 border-b border-white/[0.08] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="history" class="w-5 h-5 text-blue-400"></i>
+            <h3 class="text-base font-bold text-white">Riwayat Pemeriksaan URL</h3>
+            <span id="historyCountBadge"
+              class="px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-white/[0.05] text-slate-300 border border-white/[0.08]">
+              0 data
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Klik pada baris mana pun untuk menampilkan kembali rincian 10 fitur deteksi di panel analisis
+          </p>
         </div>
 
-        <!-- Controls: Search, Filter, Export, Reset -->
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <!-- Search box -->
+        <!-- Controls: Search, Filter, Export CSV -->
+        <div class="flex flex-wrap items-center gap-2.5 text-xs">
           <div class="relative">
-            <input type="text" id="historySearchInput" placeholder="Cari URL / ID..." oninput="filterHistoryTable()"
-              class="pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-mono-code" />
+            <input type="text" id="historySearchInput" placeholder="Cari URL atau Scan ID..."
+              oninput="filterHistoryTable()"
+              class="pl-8 pr-3 py-2 bg-obsidian-950/90 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 text-xs font-mono w-52 sm:w-64" />
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
           </div>
 
-          <!-- Classification Filter -->
           <select id="historyFilterSelect" onchange="filterHistoryTable()"
-            class="bg-slate-900 border border-slate-700 rounded-lg text-slate-300 py-1.5 px-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs">
-            <option value="ALL">Semua Status</option>
-            <option value="PHISHING">🔴 Phishing</option>
-            <option value="SUSPICIOUS">🟡 Suspicious</option>
-            <option value="SAFE">🟢 Safe</option>
+            class="bg-obsidian-950/90 border border-white/10 rounded-xl text-slate-200 py-2 px-3 focus:outline-none focus:border-blue-500 text-xs font-medium cursor-pointer">
+            <option value="ALL">Semua Klasifikasi</option>
+            <option value="PHISHING">Phishing</option>
+            <option value="SUSPICIOUS">Suspicious</option>
+            <option value="SAFE">Safe</option>
           </select>
 
-          <!-- Export CSV Button -->
-          <button onclick="exportHistoryToCsv()"
-            class="px-2.5 py-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-200 border border-slate-600/60 flex items-center gap-1 transition-colors"
-            title="Download CSV">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            CSV
+          <button type="button" onclick="exportHistoryToCsv()"
+            class="px-3.5 py-2 rounded-xl bg-blue-600/15 hover:bg-blue-600/25 text-blue-200 border border-blue-500/30 flex items-center gap-1.5 font-semibold transition-colors cursor-pointer"
+            title="Unduh laporan riwayat dalam format CSV (Kompatibel Microsoft Excel & Google Sheets)">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Ekspor CSV</span>
           </button>
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-slate-300">
-          <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 font-semibold border-b border-slate-700/60">
+          <thead
+            class="bg-obsidian-950/80 text-[11px] uppercase tracking-wider text-slate-400 font-semibold border-b border-white/[0.08]">
             <tr>
-              <th scope="col" class="px-6 py-3.5">Scan ID</th>
-              <th scope="col" class="px-6 py-3.5">URL Target</th>
-              <th scope="col" class="px-6 py-3.5">Klasifikasi</th>
-              <th scope="col" class="px-6 py-3.5">Skor Risiko</th>
-              <th scope="col" class="px-6 py-3.5 text-right">Waktu</th>
+              <th scope="col" class="px-5 py-3.5">Scan ID</th>
+              <th scope="col" class="px-5 py-3.5">URL Target</th>
+              <th scope="col" class="px-5 py-3.5">Klasifikasi</th>
+              <th scope="col" class="px-5 py-3.5">Skor Risiko</th>
+              <th scope="col" class="px-5 py-3.5">Status DNS &amp; SSL</th>
+              <th scope="col" class="px-5 py-3.5 text-right">Waktu Pemeriksaan</th>
             </tr>
           </thead>
-          <tbody id="historyTableBody" class="divide-y divide-slate-700/40 font-normal">
+          <tbody id="historyTableBody" class="divide-y divide-white/[0.05] text-xs">
             <tr>
-              <td colspan="5" class="px-6 py-8 text-center text-slate-500">
-                Memuat riwayat pemindaian...
+              <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                Memuat riwayat pemeriksaan...
               </td>
             </tr>
           </tbody>
@@ -398,40 +515,276 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="border-t border-slate-800 py-6 mt-auto bg-slate-950/60">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-1">
-      <p>Smart Phishing Detection System &bull; Cloud Web Server & Security Analysis Platform</p>
-      <p>FastAPI + Uvicorn &bull; Apache2 Reverse Proxy &bull; Responsive Vanilla JS Frontend</p>
+  <footer class="border-t border-white/[0.08] py-6 mt-auto bg-obsidian-950/85">
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <p class="font-medium text-slate-400">Smart Phishing Detection System &bull; Rule-Based URL Threat Intelligence</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <span>FastAPI &bull; 10-Feature PRD Engine &bull; RDAP &amp; Passive SSL/TLS</span>
+        <span class="text-slate-700">|</span>
+        <button type="button" onclick="openTeamModal()"
+          class="text-indigo-400 hover:text-indigo-300 font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
+          <span>Anggota Kelompok (4)</span>
+        </button>
+      </div>
     </div>
   </footer>
 
-  <!-- SCRIPT INTEGRATION -->
+  <!-- TEAM MEMBERS MODAL -->
+  <div id="teamModal" onclick="if (event.target === this) closeTeamModal()"
+    class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+    <div
+      class="w-full max-w-lg rounded-2xl border border-white/[0.14] bg-obsidian-900/95 shadow-2xl p-6 space-y-5 animate-fade-in-up"
+      role="dialog" aria-modal="true" aria-labelledby="teamModalTitle">
+      <div class="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-4">
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-indigo-500/25 ring-1 ring-white/20 shrink-0">
+            <i data-lucide="users" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="teamModalTitle" class="text-base font-extrabold text-white tracking-tight">
+                Tim Pengembang Proyek
+              </h3>
+              <span
+                class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                4 Anggota
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Smart Phishing Detection System &bull; Rule-Based PRD v2.0</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTeamModal()"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+          aria-label="Tutup modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2.5">
+        <!-- Member 1 -->
+        <div
+          class="p-3.5 rounded-xl bg-obsidian-950/85 border border-white/[0.08] hover:border-blue-500/40 flex items-center justify-between gap-3 transition-all group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-extrabold text-xs flex items-center justify-center shrink-0">
+              GZ
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-white truncate">Ghaniy Zulianto</p>
+              <p class="text-xs font-mono text-slate-400 mt-0.5">24/544392/SV/25406</p>
+            </div>
+          </div>
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white/[0.04] text-slate-300 border border-white/[0.07] shrink-0">
+            SV / 25406
+          </span>
+        </div>
+
+        <!-- Member 2 -->
+        <div
+          class="p-3.5 rounded-xl bg-obsidian-950/85 border border-white/[0.08] hover:border-indigo-500/40 flex items-center justify-between gap-3 transition-all group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-extrabold text-xs flex items-center justify-center shrink-0">
+              HA
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-white truncate">Hilman Amirul Haq</p>
+              <p class="text-xs font-mono text-slate-400 mt-0.5">24/544609/SV/254720</p>
+            </div>
+          </div>
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white/[0.04] text-slate-300 border border-white/[0.07] shrink-0">
+            SV / 254720
+          </span>
+        </div>
+
+        <!-- Member 3 -->
+        <div
+          class="p-3.5 rounded-xl bg-obsidian-950/85 border border-white/[0.08] hover:border-emerald-500/40 flex items-center justify-between gap-3 transition-all group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-extrabold text-xs flex items-center justify-center shrink-0">
+              NC
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-white truncate">NONI CINDY KLAUDIA MATATAR</p>
+              <p class="text-xs font-mono text-slate-400 mt-0.5">24/545671/SV/25729</p>
+            </div>
+          </div>
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white/[0.04] text-slate-300 border border-white/[0.07] shrink-0">
+            SV / 25729
+          </span>
+        </div>
+
+        <!-- Member 4 -->
+        <div
+          class="p-3.5 rounded-xl bg-obsidian-950/85 border border-white/[0.08] hover:border-amber-500/40 flex items-center justify-between gap-3 transition-all group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-extrabold text-xs flex items-center justify-center shrink-0">
+              ZZ
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-white truncate">Zikra Zahida Naila</p>
+              <p class="text-xs font-mono text-slate-400 mt-0.5">24/544292/SV/25376</p>
+            </div>
+          </div>
+          <span
+            class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white/[0.04] text-slate-300 border border-white/[0.07] shrink-0">
+            SV / 25376
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-white/[0.07]">
+        <span class="text-[11px] text-slate-400">Tekan <kbd
+            class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-[10px]">Esc</kbd> untuk menutup</span>
+        <button type="button" onclick="closeTeamModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors cursor-pointer shadow-md shadow-blue-600/20">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm"></div>
+
+  <!-- APPLICATION SCRIPT -->
   <script>
-    // Initialize Lucide Icons
     lucide.createIcons();
 
-    // Determine Base API URL
     const API_BASE = window.location.origin.includes('http') && !window.location.origin.includes(':5500')
       ? `${window.location.origin}/api/v1`
       : 'http://127.0.0.1:8000/api/v1';
 
-    // Global in-memory cache for client-side filtering/export
     let rawHistoryData = [];
+    let filteredHistoryData = [];
+    let currentInspectedUrl = '';
+    let selectedScanId = null;
 
-    // DOM Elements
     const apiStatusBadge = document.getElementById('apiStatusBadge');
     const apiStatusDot = document.getElementById('apiStatusDot');
     const apiStatusText = document.getElementById('apiStatusText');
     const urlForm = document.getElementById('urlForm');
     const urlInput = document.getElementById('urlInput');
+    const clearInputBtn = document.getElementById('clearInputBtn');
     const submitBtn = document.getElementById('submitBtn');
     const btnText = document.getElementById('btnText');
     const btnIcon = document.getElementById('btnIcon');
     const btnSpinner = document.getElementById('btnSpinner');
 
-    // Escape HTML to prevent XSS when displaying scanned URLs
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const styles = {
+        success: 'bg-emerald-950/95 border-emerald-500/40 text-emerald-200',
+        error: 'bg-rose-950/95 border-rose-500/40 text-rose-200',
+        info: 'bg-slate-900/95 border-blue-500/35 text-slate-100',
+      }[type] || 'bg-slate-900/95 border-white/15 text-slate-100';
+
+      const iconName = type === 'success' ? 'check-circle-2' : (type === 'error' ? 'alert-circle' : 'info');
+      const iconColor = type === 'success' ? 'text-emerald-400' : (type === 'error' ? 'text-rose-400' : 'text-blue-400');
+
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md text-xs font-medium animate-fade-in-up ${styles}`;
+      toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 shrink-0 ${iconColor}"></i><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons({ nodes: [toast] });
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(6px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 3000);
+    }
+
+    function openTeamModal() {
+      const modal = document.getElementById('teamModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeTeamModal() {
+      const modal = document.getElementById('teamModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeTeamModal();
+      }
+    });
+
+    async function refreshDashboardData() {
+      const btn = document.getElementById('refreshDataBtn');
+      const iconWrap = document.getElementById('refreshDataIconWrap');
+      const label = document.getElementById('refreshDataText');
+      if (!btn) return;
+
+      btn.disabled = true;
+      if (iconWrap) iconWrap.classList.add('animate-spin');
+      if (label) label.textContent = 'Menyegarkan...';
+
+      try {
+        const [healthOk, statsOk, historyOk] = await Promise.all([
+          checkApiHealth(),
+          fetchStats(),
+          fetchHistory(),
+        ]);
+        if (healthOk && statsOk && historyOk) {
+          showToast('Statistik dan riwayat pemindaian berhasil diperbarui.', 'success');
+        } else {
+          showToast('Gagal mengambil sebagian data dari server API.', 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        if (iconWrap) iconWrap.classList.remove('animate-spin');
+        if (label) label.textContent = 'Segarkan Data';
+      }
+    }
+
+    urlInput.addEventListener('input', () => {
+      if (urlInput.value.length > 0) {
+        clearInputBtn.classList.remove('hidden');
+      } else {
+        clearInputBtn.classList.add('hidden');
+      }
+      hideErrorAlert();
+    });
+
+    function clearUrlInput() {
+      urlInput.value = '';
+      clearInputBtn.classList.add('hidden');
+      hideErrorAlert();
+      urlInput.focus();
+    }
+
+    function showErrorAlert(msg) {
+      const box = document.getElementById('errorAlertBox');
+      const text = document.getElementById('errorAlertText');
+      text.textContent = msg;
+      box.classList.remove('hidden');
+    }
+
+    function hideErrorAlert() {
+      document.getElementById('errorAlertBox').classList.add('hidden');
+    }
+
     function escapeHtml(str) {
-      return String(str)
+      return String(str ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -439,108 +792,159 @@
         .replace(/'/g, '&#39;');
     }
 
-    // Quick sample loader
-    function setSampleUrl(url) {
-      urlInput.value = url;
-      urlInput.focus();
+    async function copyInspectedUrl() {
+      if (!currentInspectedUrl) return;
+      try {
+        await navigator.clipboard.writeText(currentInspectedUrl);
+        const label = document.getElementById('copyUrlText');
+        if (label) {
+          label.textContent = 'Tersalin!';
+          setTimeout(() => { label.textContent = 'Salin URL'; }, 1500);
+        }
+        showToast('URL target berhasil disalin ke clipboard.', 'success');
+      } catch (_) {}
     }
 
-    // Health Check on load
     async function checkApiHealth() {
       try {
         const response = await fetch(`${API_BASE}/health`, { method: 'GET' });
         if (response.ok) {
           const data = await response.json();
-          const backendType = data.storage && data.storage.backend === 'firestore'
-            ? 'Firestore'
-            : 'In-Memory';
-          apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-          apiStatusText.textContent = `API Connected (${backendType})`;
+          const storageBackend = data.storage ? data.storage.backend : '';
+          apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
+          apiStatusText.textContent = 'API Online';
           apiStatusText.className = 'text-emerald-300 font-semibold';
-          apiStatusBadge.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300';
+          apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300';
+          return true;
         } else {
-          throw new Error('API Bad Status');
+          throw new Error('Bad Status');
         }
       } catch (err) {
         apiStatusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
         apiStatusText.textContent = 'API Offline';
         apiStatusText.className = 'text-rose-400 font-semibold';
-        apiStatusBadge.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300';
+        apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300';
+        return false;
       }
     }
 
-    // Fetch and render Statistics
     async function fetchStats() {
       try {
         const response = await fetch(`${API_BASE}/statistics`);
         if (response.ok) {
           const stats = await response.json();
-          document.getElementById('statTotal').textContent = stats.total_scans;
-          document.getElementById('statSafe').textContent = stats.safe_count;
-          document.getElementById('statSuspicious').textContent = stats.suspicious_count;
-          document.getElementById('statPhishing').textContent = stats.phishing_count;
+          const total = stats.total_scans || 0;
+          const safe = stats.safe_count || 0;
+          const susp = stats.suspicious_count || 0;
+          const phish = stats.phishing_count || 0;
+
+          document.getElementById('statTotal').textContent = total;
+          document.getElementById('statSafe').textContent = safe;
+          document.getElementById('statSuspicious').textContent = susp;
+          document.getElementById('statPhishing').textContent = phish;
+
+          const safePct = total > 0 ? Math.round((safe / total) * 100) : 0;
+          const suspPct = total > 0 ? Math.round((susp / total) * 100) : 0;
+          const phishPct = total > 0 ? Math.round((phish / total) * 100) : 0;
+
+          document.getElementById('statSafePct').textContent = `${safePct}%`;
+          document.getElementById('statSuspiciousPct').textContent = `${suspPct}%`;
+          document.getElementById('statPhishingPct').textContent = `${phishPct}%`;
+
+          document.getElementById('statSafeBar').style.width = `${safePct}%`;
+          document.getElementById('statSuspiciousBar').style.width = `${suspPct}%`;
+          document.getElementById('statPhishingBar').style.width = `${phishPct}%`;
+          return true;
         }
+        return false;
       } catch (err) {
         console.error('Error fetching statistics:', err);
+        return false;
       }
     }
 
-    // Format ISO Date to human friendly string
     function formatDate(isoStr) {
       try {
         const d = new Date(isoStr);
         return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
-          ' (' + d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ')';
+          ' · ' + d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
       } catch (e) {
         return isoStr;
       }
     }
 
-    // Badge styling helper
     function getClassificationBadge(classification) {
       if (classification === 'PHISHING') {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> PHISHING
+        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> PHISHING
                 </span>`;
       } else if (classification === 'SUSPICIOUS') {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> SUSPICIOUS
+        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> SUSPICIOUS
                 </span>`;
-      } else {
-        return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> SAFE
-                </span>`;
+      }
+      return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> SAFE
+              </span>`;
+    }
+
+    function inspectHistoryItem(scanId) {
+      const found = rawHistoryData.find(item => item.scan_id === scanId);
+      if (found) {
+        selectedScanId = scanId;
+        filterHistoryTable();
+        renderResult(found);
       }
     }
 
-    // Render Table items
     function renderTableRows(items) {
       const tbody = document.getElementById('historyTableBody');
+      const countBadge = document.getElementById('historyCountBadge');
+      if (countBadge) {
+        countBadge.textContent = `${items ? items.length : 0} dari ${rawHistoryData.length} data`;
+      }
+
       if (!items || items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-6 text-center text-slate-500">Tidak ada data pemindaian yang cocok.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-slate-500">Belum ada data pemeriksaan yang cocok dengan filter.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = items.map(item => {
         const safeId = escapeHtml(item.scan_id);
         const safeUrl = escapeHtml(item.url);
+        const dInfo = item.domain_info || {};
+        const dnsBadge = dInfo.dns_resolved
+          ? `<span class="text-emerald-400 font-semibold">DNS OK</span>`
+          : `<span class="text-amber-400 font-semibold">DNS N/A</span>`;
+        const sslText = escapeHtml(dInfo.ssl_status || 'N/A');
+        const scoreColor = item.risk_score >= 60
+          ? 'text-rose-400 bg-rose-500/10 border-rose-500/25'
+          : (item.risk_score >= 30 ? 'text-amber-400 bg-amber-500/10 border-amber-500/25' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25');
+        const isSelected = item.scan_id === selectedScanId;
+        const rowClass = isSelected
+          ? 'bg-blue-500/10 border-l-2 border-l-blue-400 hover:bg-blue-500/15 transition-colors cursor-pointer group'
+          : 'hover:bg-white/[0.04] transition-colors cursor-pointer group';
+
         return `
-        <tr class="hover:bg-slate-700/30 transition-colors">
-          <td class="px-6 py-4 font-mono-code text-xs text-slate-400 whitespace-nowrap">
+        <tr onclick="inspectHistoryItem('${safeId}')" class="${rowClass}" title="Klik untuk melihat detail 10 fitur">
+          <td class="px-5 py-3.5 font-mono text-xs ${isSelected ? 'text-blue-300 font-bold' : 'text-slate-400'} group-hover:text-blue-400 whitespace-nowrap">
             ${safeId}
           </td>
-          <td class="px-6 py-4 font-mono-code text-xs max-w-xs truncate text-slate-200" title="${safeUrl}">
+          <td class="px-5 py-3.5 font-mono text-xs max-w-xs sm:max-w-md truncate text-slate-200" title="${safeUrl}">
             ${safeUrl}
           </td>
-          <td class="px-6 py-4 whitespace-nowrap">
+          <td class="px-5 py-3.5 whitespace-nowrap">
             ${getClassificationBadge(item.classification)}
           </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <span class="font-bold text-xs ${item.risk_score >= 60 ? 'text-rose-400' : (item.risk_score >= 30 ? 'text-amber-400' : 'text-emerald-400')}">
-              ${item.risk_score}%
+          <td class="px-5 py-3.5 whitespace-nowrap">
+            <span class="px-2.5 py-0.5 rounded-md border font-mono font-bold text-xs tabular-nums ${scoreColor}">
+              ${item.risk_score}/100
             </span>
           </td>
-          <td class="px-6 py-4 text-xs text-slate-400 text-right whitespace-nowrap">
+          <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-400 font-mono">
+            ${dnsBadge} <span class="text-slate-600">·</span> <span>SSL: ${sslText}</span>
+          </td>
+          <td class="px-5 py-3.5 text-xs text-slate-400 text-right whitespace-nowrap font-mono tabular-nums">
             ${formatDate(item.scanned_at)}
           </td>
         </tr>
@@ -548,12 +952,11 @@
       }).join('');
     }
 
-    // Filter History Table based on search query & classification filter
     function filterHistoryTable() {
       const query = (document.getElementById('historySearchInput').value || '').toLowerCase().trim();
       const statusFilter = document.getElementById('historyFilterSelect').value;
 
-      const filtered = rawHistoryData.filter(item => {
+      filteredHistoryData = rawHistoryData.filter(item => {
         const matchesQuery = !query ||
           item.url.toLowerCase().includes(query) ||
           item.scan_id.toLowerCase().includes(query);
@@ -561,245 +964,416 @@
         return matchesQuery && matchesStatus;
       });
 
-      renderTableRows(filtered);
+      renderTableRows(filteredHistoryData);
     }
 
-    // Fetch History from API
     async function fetchHistory() {
       try {
         const response = await fetch(`${API_BASE}/history?limit=50`);
         if (response.ok) {
           rawHistoryData = await response.json();
           filterHistoryTable();
+          return true;
         }
+        return false;
       } catch (err) {
         console.error('Error fetching history:', err);
+        return false;
       }
     }
 
-    // Export history to CSV file
+    function formatCsvTimestamp(isoStr) {
+      try {
+        const d = new Date(isoStr);
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      } catch (_) {
+        return String(isoStr ?? '');
+      }
+    }
+
+    function csvEscape(val) {
+      const str = String(val ?? '').replace(/\r?\n/g, ' ').trim();
+      const safe = (str.length > 1 && /^[=+\-@]/.test(str)) ? `'${str}` : str;
+      return `"${safe.replace(/"/g, '""')}"`;
+    }
+
     function exportHistoryToCsv() {
-      if (!rawHistoryData || rawHistoryData.length === 0) {
-        alert('Tidak ada riwayat pemindaian untuk diekspor.');
+      const exportRows = filteredHistoryData;
+      if (!exportRows || exportRows.length === 0) {
+        showToast('Tidak ada data riwayat yang cocok untuk diekspor.', 'error');
         return;
       }
 
-      const headers = ['Scan ID', 'URL', 'Classification', 'Risk Score', 'Timestamp'];
-      const rows = rawHistoryData.map(item => [
-        item.scan_id,
-        `"${item.url.replace(/"/g, '""')}"`,
-        item.classification,
-        item.risk_score,
-        item.scanned_at
-      ]);
+      const headers = [
+        'No',
+        'Scan ID',
+        'URL Target',
+        'Klasifikasi',
+        'Skor Risiko (0-100)',
+        'Status Teknis',
+        'DNS Resolved',
+        'IP Host',
+        'Status SSL',
+        'Usia Domain (Hari)',
+        'Kemiripan Domain',
+        'URL Shortener',
+        'Kata Kunci Mencurigakan',
+        'Aturan Terpicu',
+        'Waktu Pemeriksaan'
+      ];
 
-      const csvContent = 'data:text/csv;charset=utf-8,' +
-        [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const rows = exportRows.map((item, idx) => {
+        const f = item.features || {};
+        const d = item.domain_info || {};
+        const keywords = Array.isArray(f.suspicious_keywords_found) && f.suspicious_keywords_found.length > 0
+          ? f.suspicious_keywords_found.join(' | ')
+          : 'Tidak ada';
+        const rules = Array.isArray(item.rules_triggered) && item.rules_triggered.length > 0
+          ? item.rules_triggered.join(' | ')
+          : 'Tidak ada';
+        const ageDisplay = typeof f.domain_age_days === 'number' ? f.domain_age_days : 'Unavailable';
+        const simDisplay = f.similarity_detected ? `Mirip ${f.similar_to_domain || '-'}` : 'Tidak';
 
-      const encodedUri = encodeURI(csvContent);
+        return [
+          idx + 1,
+          csvEscape(item.scan_id),
+          csvEscape(item.url),
+          csvEscape(item.classification),
+          item.risk_score ?? 0,
+          csvEscape(item.technical_status || '-'),
+          csvEscape(d.dns_resolved ? 'Ya' : 'Tidak'),
+          csvEscape(d.ip_address || 'Unknown'),
+          csvEscape(d.ssl_status || 'Unavailable'),
+          csvEscape(ageDisplay),
+          csvEscape(simDisplay),
+          csvEscape(f.is_shortened ? 'Ya' : 'Tidak'),
+          csvEscape(keywords),
+          csvEscape(rules),
+          csvEscape(formatCsvTimestamp(item.scanned_at))
+        ].join(',');
+      });
+
+      const csvBody = ['sep=,', headers.map(csvEscape).join(','), ...rows].join('\r\n');
+      const blob = new Blob(['\uFEFF' + csvBody], { type: 'text/csv;charset=utf-8;' });
+      const blobUrl = URL.createObjectURL(blob);
+
       const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `phishing_scans_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.setAttribute('href', blobUrl);
+      link.setAttribute('download', `laporan_phishing_${new Date().toISOString().slice(0, 10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+      showToast(`Berhasil mengekspor ${exportRows.length} data ke file CSV.`, 'success');
     }
 
-    // Render Detailed Scan Result Banner
+    function buildFeatureCard(num, title, icon, value, subtext, statusLevel, pillText) {
+      const styles = {
+        safe: {
+          border: 'border-emerald-500/20 hover:border-emerald-500/40',
+          iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+          pill: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
+        },
+        warn: {
+          border: 'border-amber-500/25 hover:border-amber-500/45',
+          iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
+          pill: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        },
+        danger: {
+          border: 'border-rose-500/30 hover:border-rose-500/50',
+          iconBg: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+          pill: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+        },
+        neutral: {
+          border: 'border-white/[0.08] hover:border-white/15',
+          iconBg: 'bg-slate-800 text-slate-300 border-white/10',
+          pill: 'bg-slate-800 text-slate-400 border-white/10',
+        }
+      }[statusLevel] || {
+        border: 'border-white/[0.08]',
+        iconBg: 'bg-slate-800 text-slate-300 border-white/10',
+        pill: 'bg-slate-800 text-slate-400 border-white/10',
+      };
+
+      return `
+        <div class="p-4 rounded-xl glass-card border ${styles.border} flex flex-col justify-between gap-3 transition-all">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg border ${styles.iconBg} flex items-center justify-center shrink-0">
+                <i data-lucide="${icon}" class="w-3.5 h-3.5"></i>
+              </div>
+              <span class="text-[11px] font-mono font-bold text-slate-400">#${num}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${styles.pill}">
+              ${escapeHtml(pillText)}
+            </span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-400">${escapeHtml(title)}</p>
+            <p class="text-sm font-extrabold text-white mt-0.5 break-words tabular-nums">${escapeHtml(value)}</p>
+            <p class="text-[11px] text-slate-400 mt-1 leading-snug break-words">${escapeHtml(subtext)}</p>
+          </div>
+        </div>
+      `;
+    }
+
     function renderResult(data) {
       const section = document.getElementById('resultSection');
       const card = document.getElementById('resultCard');
       const badgeVerdict = document.getElementById('badgeVerdict');
       const badgeScanId = document.getElementById('badgeScanId');
+      const badgeScanTime = document.getElementById('badgeScanTime');
+      const badgeTechStatus = document.getElementById('badgeTechStatus');
       const resultUrlLink = document.getElementById('resultUrlLink');
       const scoreValue = document.getElementById('scoreValue');
       const scoreBar = document.getElementById('scoreBar');
+      const gaugeCircle = document.getElementById('gaugeCircle');
 
-      // Populate basic info
-      badgeScanId.textContent = data.scan_id;
-      const techBadge = document.getElementById('badgeTechStatus');
-      if (techBadge) {
-        techBadge.textContent = data.technical_status === 'complete'
-          ? 'Tech Check: Complete'
-          : 'Tech Check: Inconclusive';
-      }
-      const reasonEl = document.getElementById('resultReasonText');
-      if (reasonEl) {
-        reasonEl.textContent = data.classification_reason || '';
-      }
+      currentInspectedUrl = data.url;
+      selectedScanId = data.scan_id;
+      badgeScanId.textContent = `ID: ${data.scan_id}`;
+      badgeScanTime.textContent = formatDate(data.scanned_at);
       resultUrlLink.textContent = data.url;
       resultUrlLink.href = data.url.startsWith('http') ? data.url : `http://${data.url}`;
-      scoreValue.textContent = data.risk_score;
-      scoreBar.style.width = `${data.risk_score}%`;
 
-      // Theming based on Classification
+      const score = Math.min(100, Math.max(0, Number(data.risk_score) || 0));
+      scoreValue.textContent = score;
+      scoreBar.style.width = `${score}%`;
+
+      const circumference = 314.16;
+      const offset = circumference - (score / 100) * circumference;
+      gaugeCircle.style.strokeDashoffset = `${offset}`;
+
+      if (data.technical_status === 'complete') {
+        badgeTechStatus.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i><span>Verifikasi Teknis Lengkap</span>`;
+      } else {
+        badgeTechStatus.innerHTML = `<i data-lucide="info" class="w-3.5 h-3.5 text-amber-400"></i><span>Teknis Parsial (DNS/Leksikal)</span>`;
+      }
+
+      document.getElementById('resultReasonText').textContent = data.classification_reason || '';
+
       if (data.classification === 'PHISHING') {
-        card.className = 'rounded-2xl border border-rose-500/40 bg-gradient-to-b from-rose-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-rose-950/40 relative overflow-hidden transition-all';
-        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/40';
-        badgeVerdict.innerHTML = `<i data-lucide="shield-x" class="w-4 h-4 text-rose-400"></i> PHISHING (TERINDIKASI PHISHING)`;
-        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-rose-400';
-        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-rose-500 shadow-sm shadow-rose-500/50';
+        card.className = 'rounded-2xl border border-rose-500/35 glass-panel p-6 sm:p-8 shadow-2xl shadow-rose-950/30 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold tracking-wide uppercase inline-flex items-center gap-2 bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="shield-x" class="w-4 h-4 text-rose-400"></i><span>PHISHING · BERBAHAYA</span>`;
+        scoreValue.className = 'text-3xl font-extrabold tracking-tight tabular-nums text-rose-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-rose-500';
+        gaugeCircle.setAttribute('class', 'gauge-ring text-rose-500');
       } else if (data.classification === 'SUSPICIOUS') {
-        card.className = 'rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-amber-950/40 relative overflow-hidden transition-all';
-        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40';
-        badgeVerdict.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> SUSPICIOUS (MENCURIGAKAN)`;
-        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-amber-400';
-        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-amber-500 shadow-sm shadow-amber-500/50';
+        card.className = 'rounded-2xl border border-amber-500/35 glass-panel p-6 sm:p-8 shadow-2xl shadow-amber-950/30 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold tracking-wide uppercase inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i><span>SUSPICIOUS · MENCURIGAKAN</span>`;
+        scoreValue.className = 'text-3xl font-extrabold tracking-tight tabular-nums text-amber-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-amber-500';
+        gaugeCircle.setAttribute('class', 'gauge-ring text-amber-500');
       } else {
-        card.className = 'rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-emerald-950/40 via-slate-900/90 to-slate-900/90 p-6 sm:p-8 shadow-2xl shadow-emerald-950/40 relative overflow-hidden transition-all';
-        badgeVerdict.className = 'px-3.5 py-1.5 rounded-lg text-sm font-bold tracking-wide uppercase flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-        badgeVerdict.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> SAFE (AMAN)`;
-        scoreValue.className = 'text-2xl font-extrabold tracking-tight text-emerald-400';
-        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-emerald-500 shadow-sm shadow-emerald-500/50';
+        card.className = 'rounded-2xl border border-emerald-500/35 glass-panel p-6 sm:p-8 shadow-2xl shadow-emerald-950/30 relative overflow-hidden transition-all';
+        badgeVerdict.className = 'px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold tracking-wide uppercase inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        badgeVerdict.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i><span>SAFE · AMAN</span>`;
+        scoreValue.className = 'text-3xl font-extrabold tracking-tight tabular-nums text-emerald-400';
+        scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-emerald-500';
+        gaugeCircle.setAttribute('class', 'gauge-ring text-emerald-500');
       }
 
-      // Feature 1: URL Length & Hyphen Count
-      const lengthBox = document.getElementById('iconLengthBox');
-      document.getElementById('featureUrlLength').textContent = `${data.features.url_length} Karakter`;
-      document.getElementById('featureHyphenHint').textContent = `${data.features.hyphen_count} tanda hubung '-' pada host`;
-      if (data.features.url_length > 75 || data.features.hyphen_count >= 3) {
-        lengthBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
-      } else if (data.features.url_length > 54 || data.features.hyphen_count >= 1) {
-        lengthBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      } else {
-        lengthBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      const f = data.features || {};
+      const d = data.domain_info || {};
+
+      // Populate URL Anatomy Bar
+      const anatomyBar = document.getElementById('urlAnatomyBar');
+      if (anatomyBar) {
+        const schemeText = f.is_https === 1 ? 'HTTPS' : 'HTTP';
+        const hostText = d.hostname || '-';
+        const regDomText = f.registrable_domain || d.registrable_domain || '-';
+        const ipText = d.ip_address || 'Unknown';
+        anatomyBar.innerHTML = `
+          <span class="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-slate-300">Skema: <strong class="text-white">${escapeHtml(schemeText)}</strong></span>
+          <span class="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-slate-300">Host: <strong class="text-white">${escapeHtml(hostText)}</strong></span>
+          <span class="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-slate-300">Domain Utama: <strong class="text-white">${escapeHtml(regDomText)}</strong></span>
+          <span class="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-slate-300">IP DNS: <strong class="text-white">${escapeHtml(ipText)}</strong></span>
+        `;
       }
 
-      // Feature 2: Host Anomalies (IP & @)
-      const ipBox = document.getElementById('iconIpBox');
-      const hasIp = data.features.has_ip === 1;
-      const hasAt = data.features.has_at === 1;
-      document.getElementById('featureHostAnomaly').textContent =
-        `IP: ${hasIp ? 'Ya' : 'Tidak'} | @: ${hasAt ? 'Ya' : 'Tidak'}`;
-      document.getElementById('featureHostnameHint').textContent =
-        `Host: ${data.domain_info ? data.domain_info.hostname : '-'}`;
-      ipBox.className = (hasIp || hasAt)
-        ? 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20'
-        : 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      // Count risky/warning features out of 10
+      const featureDefinitions = [
+        {
+          num: '01',
+          title: 'Panjang URL',
+          icon: 'ruler',
+          value: `${f.url_length || 0} Karakter`,
+          sub: f.url_length > 75 ? 'Melebihi batas aman (>75 karakter)' : (f.url_length > 54 ? 'Sedikit panjang (55-75 karakter)' : 'Panjang URL normal (<=54)'),
+          level: f.url_length > 75 ? 'danger' : (f.url_length > 54 ? 'warn' : 'safe'),
+          pill: f.url_length > 75 ? 'Panjang' : (f.url_length > 54 ? 'Sedang' : 'Normal')
+        },
+        {
+          num: '02',
+          title: 'Alamat IP Host',
+          icon: 'network',
+          value: f.has_ip === 1 ? 'Menggunakan IP' : 'Nama Domain',
+          sub: f.has_ip === 1 ? `Host berupa IP langsung (${d.hostname || '-'})` : `Host: ${d.hostname || '-'}`,
+          level: f.has_ip === 1 ? 'danger' : 'safe',
+          pill: f.has_ip === 1 ? 'Bahaya' : 'Aman'
+        },
+        {
+          num: '03',
+          title: 'Karakter Khusus',
+          icon: 'at-sign',
+          value: `'@': ${f.has_at === 1 ? 'Ada' : '0'} · '-': ${f.hyphen_count || 0}`,
+          sub: `Total simbol khusus: ${f.special_char_count || 0} (encoding '%': ${f.percent_count || 0})`,
+          level: f.has_at === 1 || f.hyphen_count >= 3 ? 'danger' : (f.hyphen_count >= 1 ? 'warn' : 'safe'),
+          pill: f.has_at === 1 ? 'Anomali @' : (f.hyphen_count >= 3 ? 'Banyak -' : 'Normal')
+        },
+        {
+          num: '04',
+          title: 'Struktur Subdomain',
+          icon: 'git-branch',
+          value: `${f.subdomain_count || 0} Level Subdomain`,
+          sub: `Domain utama: ${f.registrable_domain || d.registrable_domain || '-'}`,
+          level: f.subdomain_count >= 3 ? 'danger' : (f.subdomain_count === 2 ? 'warn' : 'safe'),
+          pill: f.subdomain_count >= 3 ? 'Berlebihan' : (f.subdomain_count === 2 ? '2 Level' : 'Normal')
+        },
+        {
+          num: '05',
+          title: 'Protokol HTTPS',
+          icon: 'lock',
+          value: f.is_https === 1 ? 'HTTPS (Terenkripsi)' : 'HTTP (Tanpa Enkripsi)',
+          sub: f.is_https === 1 ? 'Menggunakan skema transportasi HTTPS' : 'Koneksi rentan penyadapan (HTTP)',
+          level: f.is_https === 1 ? 'safe' : 'warn',
+          pill: f.is_https === 1 ? 'HTTPS' : 'HTTP'
+        },
+        {
+          num: '06',
+          title: 'Usia Domain (RDAP)',
+          icon: 'calendar-clock',
+          value: typeof f.domain_age_days === 'number' ? `${f.domain_age_days} Hari` : 'Data Unavailable',
+          sub: typeof f.domain_age_days === 'number'
+            ? `Terdaftar: ${d.registration_date || 'RDAP Verified'}`
+            : 'RDAP tidak tersedia / dibatasi jaringan',
+          level: typeof f.domain_age_days === 'number'
+            ? (f.domain_age_days < 30 ? 'danger' : (f.domain_age_days < 90 ? 'warn' : 'safe'))
+            : 'neutral',
+          pill: typeof f.domain_age_days === 'number'
+            ? (f.domain_age_days < 90 ? 'Domain Baru' : 'Mapan')
+            : 'Unavailable'
+        },
+        {
+          num: '07',
+          title: 'Kata Kunci Berisiko',
+          icon: 'key-round',
+          value: (f.suspicious_keywords_found && f.suspicious_keywords_found.length > 0)
+            ? `${f.suspicious_keywords_found.length} Kata Kunci`
+            : 'Tidak Ditemukan',
+          sub: (f.suspicious_keywords_found && f.suspicious_keywords_found.length > 0)
+            ? `Terdeteksi: ${f.suspicious_keywords_found.join(', ')}`
+            : 'URL bersih dari kata pancingan sensitif',
+          level: (f.suspicious_keywords_found && f.suspicious_keywords_found.length >= 2)
+            ? 'danger'
+            : ((f.suspicious_keywords_found && f.suspicious_keywords_found.length === 1) ? 'warn' : 'safe'),
+          pill: (f.suspicious_keywords_found && f.suspicious_keywords_found.length > 0) ? 'Terdeteksi' : 'Bersih'
+        },
+        {
+          num: '08',
+          title: 'URL Shortener',
+          icon: 'minimize-2',
+          value: f.is_shortened ? 'Ya (Shortened URL)' : 'URL Langsung',
+          sub: f.is_shortened ? 'Domain menggunakan layanan pemendek tautan' : 'Bukan domain pemendek URL',
+          level: f.is_shortened ? 'warn' : 'safe',
+          pill: f.is_shortened ? 'Shortener' : 'Langsung'
+        },
+        {
+          num: '09',
+          title: 'Kemiripan Domain',
+          icon: 'shield-alert',
+          value: f.similarity_detected ? `Mirip ${f.similar_to_domain}` : 'Tidak Menyerupai',
+          sub: f.similarity_detected
+            ? `Indikasi typosquatting (${Math.round((f.similarity_score || 0) * 100)}% mirip)`
+            : 'Tidak terdeteksi imitasi domain resmi',
+          level: f.similarity_detected ? 'danger' : 'safe',
+          pill: f.similarity_detected ? 'Typosquat' : 'Aman'
+        },
+        {
+          num: '10',
+          title: 'DNS & Sertifikat SSL',
+          icon: 'globe-lock',
+          value: `DNS: ${d.dns_resolved ? 'OK' : 'Gagal'} · SSL: ${d.ssl_status || 'N/A'}`,
+          sub: `IP: ${d.ip_address || 'Unknown'} · Exp: ${d.ssl_expiry || 'Unknown'}`,
+          level: (d.ssl_status === 'Invalid / Self-Signed' || d.ssl_status === 'Expired' || !d.dns_resolved)
+            ? 'danger'
+            : (d.ssl_status === 'Valid' ? 'safe' : 'neutral'),
+          pill: d.ssl_status === 'Valid' ? 'SSL Valid' : (!d.dns_resolved ? 'DNS Gagal' : d.ssl_status || 'N/A')
+        }
+      ];
 
-      // Feature 3: Subdomain & HTTPS Protocol
-      const httpsBox = document.getElementById('iconHttpsBox');
-      const isHttps = data.features.is_https === 1;
-      document.getElementById('featureHasHttps').textContent = isHttps ? 'HTTPS Aktif' : 'HTTP (Non-HTTPS)';
-      document.getElementById('featureSubdomainHint').textContent = `${data.features.subdomain_count} level subdomain`;
-      if (isHttps && data.features.subdomain_count < 2) {
-        httpsBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      } else if (!isHttps || data.features.subdomain_count >= 3) {
-        httpsBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      } else {
-        httpsBox.className = 'p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20';
+      const riskyCount = featureDefinitions.filter(item => item.level === 'danger' || item.level === 'warn').length;
+      const summaryPill = document.getElementById('featureRiskSummaryPill');
+      if (summaryPill) {
+        if (riskyCount === 0) {
+          summaryPill.className = 'text-[11px] font-mono font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-300';
+          summaryPill.textContent = '0 / 10 Indikator Berisiko (Bersih)';
+        } else {
+          summaryPill.className = 'text-[11px] font-mono font-semibold px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300';
+          summaryPill.textContent = `${riskyCount} / 10 Parameter Menunjukkan Indikator Risiko`;
+        }
       }
 
-      // Feature 4: Passive DNS & SSL Status
-      const dnsSslBox = document.getElementById('iconDnsSslBox');
-      const dInfo = data.domain_info || { dns_resolved: false, ip_address: 'Unknown', ssl_status: 'Unknown', ssl_expiry: 'Unknown' };
-      document.getElementById('domainDnsSslStatus').textContent =
-        `DNS: ${dInfo.dns_resolved ? 'OK' : 'Gagal'} | SSL: ${dInfo.ssl_status}`;
-      document.getElementById('domainIpExpiryHint').textContent =
-        `IP: ${dInfo.ip_address} | Exp: ${dInfo.ssl_expiry}`;
-      if (dInfo.ssl_status === 'Invalid / Self-Signed' || dInfo.ssl_status === 'Expired') {
-        dnsSslBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
-      } else if (!dInfo.dns_resolved || dInfo.ssl_status === 'Unknown' || dInfo.ssl_status === 'Unavailable') {
-        dnsSslBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      } else {
-        dnsSslBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      }
+      document.getElementById('featureMatrixGrid').innerHTML = featureDefinitions
+        .map(item => buildFeatureCard(item.num, item.title, item.icon, item.value, item.sub, item.level, item.pill))
+        .join('');
 
-      // Feature 5: Domain Age (RDAP)
-      const ageBox = document.getElementById('iconDomainAgeBox');
-      const ageDays = data.features.domain_age_days;
-      const ageStatus = data.features.domain_age_status || 'unavailable';
-      if (typeof ageDays === 'number') {
-        document.getElementById('featureDomainAge').textContent = `${ageDays} Hari`;
-        document.getElementById('featureDomainAgeHint').textContent = dInfo.registration_date
-          ? `Terdaftar: ${dInfo.registration_date}`
-          : 'Sumber: RDAP';
-        ageBox.className = ageDays < 90
-          ? 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20'
-          : 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      } else {
-        document.getElementById('featureDomainAge').textContent = 'Unavailable';
-        document.getElementById('featureDomainAgeHint').textContent = `Status RDAP: ${ageStatus}`;
-        ageBox.className = 'p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700';
-      }
-
-      // Feature 6: Domain Similarity
-      const simBox = document.getElementById('iconSimilarityBox');
-      if (data.features.similarity_detected) {
-        document.getElementById('featureSimilarity').textContent = `Mirip: ${data.features.similar_to_domain}`;
-        document.getElementById('featureSimilarityHint').textContent = `Skor kemiripan: ${Math.round((data.features.similarity_score || 0) * 100)}%`;
-        simBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
-      } else {
-        document.getElementById('featureSimilarity').textContent = 'Tidak Terdeteksi';
-        document.getElementById('featureSimilarityHint').textContent = 'Tidak menyerupai domain resmi';
-        simBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      }
-
-      // Feature 7: URL Shortener
-      const shortBox = document.getElementById('iconShortenerBox');
-      if (data.features.is_shortened) {
-        document.getElementById('featureShortener').textContent = 'Terdeteksi Shortener';
-        document.getElementById('featureShortenerHint').textContent = 'Tujuan akhir disembunyikan';
-        shortBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      } else {
-        document.getElementById('featureShortener').textContent = 'URL Langsung';
-        document.getElementById('featureShortenerHint').textContent = 'Bukan layanan pemendek URL';
-        shortBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      }
-
-      // Feature 8: Suspicious Keywords
-      const keywordsContainer = document.getElementById('featureKeywordsList');
-      const kwBox = document.getElementById('iconKeywordsBox');
-      const kwList = data.features.suspicious_keywords_found || [];
-      if (kwList.length > 0) {
-        keywordsContainer.innerHTML = kwList.map(kw =>
-          `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code border border-rose-500/30">${escapeHtml(kw)}</span>`
-        ).join('');
-        kwBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
-      } else {
-        keywordsContainer.innerHTML = `<span class="text-slate-400">Nihil / Bersih</span>`;
-        kwBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      }
-
-      // Triggered Rules
+      // Render Triggered Rules nicely with Rule ID pills
       const rulesList = document.getElementById('rulesList');
-      if (data.rules_triggered && data.rules_triggered.length > 0) {
-        rulesList.innerHTML = data.rules_triggered.map(rule => `
-          <li class="flex items-start space-x-2 text-slate-300">
-            <span class="text-blue-400 mt-0.5 font-bold">&bull;</span>
-            <span class="font-mono-code text-xs">${escapeHtml(rule)}</span>
-          </li>
-        `).join('');
-      } else {
-        rulesList.innerHTML = `<li class="text-xs text-slate-500">Tidak ada anomali terdeteksi.</li>`;
+      const rulesCountBadge = document.getElementById('triggeredRulesCountBadge');
+      const triggered = Array.isArray(data.rules_triggered) ? data.rules_triggered : [];
+      if (rulesCountBadge) {
+        rulesCountBadge.textContent = `${triggered.length} aturan aktif`;
       }
 
-      // Re-trigger Lucide icon rendering
-      lucide.createIcons();
+      if (triggered.length > 0) {
+        rulesList.innerHTML = triggered.map(rule => {
+          const parts = String(rule).split(':');
+          const code = parts[0] ? parts[0].trim() : 'RULE';
+          const desc = parts.slice(1).join(':').trim() || rule;
+          const isPhishRule = code === 'R-01' || code === 'R-03';
+          const isSafeRule = code === 'R-05';
+          const pillStyle = isPhishRule
+            ? 'bg-rose-500/20 text-rose-300 border-rose-500/35'
+            : (isSafeRule ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/35' : 'bg-amber-500/20 text-amber-300 border-amber-500/35');
 
-      // Show Section with smooth scroll
+          return `
+            <div class="p-3.5 rounded-xl glass-card border border-white/[0.08] flex items-start gap-3">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold border shrink-0 ${pillStyle}">
+                ${escapeHtml(code)}
+              </span>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed pt-0.5">${escapeHtml(desc)}</p>
+            </div>
+          `;
+        }).join('');
+      } else {
+        rulesList.innerHTML = `<div class="text-xs text-slate-500">Tidak ada aturan terpicu.</div>`;
+      }
+
+      lucide.createIcons();
       section.classList.remove('hidden');
+      section.classList.add('animate-fade-in-up');
       section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // Form Submit Handler
     urlForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      hideErrorAlert();
       const targetUrl = urlInput.value.trim();
       if (!targetUrl) return;
 
-      // Enter Loading State
       submitBtn.disabled = true;
       btnSpinner.classList.remove('hidden');
       btnIcon.classList.add('hidden');
-      btnText.textContent = 'Menganalisis...';
+      btnText.textContent = 'Memeriksa...';
 
       try {
         const response = await fetch(`${API_BASE}/analyze`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url: targetUrl })
         });
 
@@ -816,23 +1390,19 @@
 
         const data = await response.json();
         renderResult(data);
-
-        // Refresh stats and history tables immediately
         await fetchStats();
         await fetchHistory();
-
+        showToast(`Analisis selesai: ${data.classification} (Skor ${data.risk_score}/100).`, data.classification === 'SAFE' ? 'success' : 'info');
       } catch (err) {
-        alert(`Terjadi kesalahan: ${err.message}`);
+        showErrorAlert(err.message);
       } finally {
-        // Reset Loading State
         submitBtn.disabled = false;
         btnSpinner.classList.add('hidden');
         btnIcon.classList.remove('hidden');
-        btnText.textContent = 'Periksa URL';
+        btnText.textContent = 'Analisis URL';
       }
     });
 
-    // Auto-run on load
     window.addEventListener('DOMContentLoaded', () => {
       checkApiHealth();
       fetchStats();
