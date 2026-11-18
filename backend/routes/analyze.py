@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, status
+
 from backend.schemas import URLCheckRequest, URLCheckResponse
-from backend.services.mock_classifier import analyze_url
+from backend.security import rate_limit_analyze
+from backend.services.classifier_service import analyze_url
 
 router = APIRouter(tags=["Analysis"])
 
@@ -9,15 +11,9 @@ router = APIRouter(tags=["Analysis"])
     "/analyze",
     response_model=URLCheckResponse,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(rate_limit_analyze)],
     summary="Analyze URL for Phishing Threats",
 )
 def analyze_target_url(payload: URLCheckRequest):
-    """Analyze a given URL with heuristic and mock classification logic."""
-    target_url = payload.url.strip()
-    if not target_url:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="URL parameter cannot be empty.",
-        )
-    return analyze_url(target_url)
-
+    """Analyze a validated URL using Zikra's feature extraction and passive DNS/SSL engine."""
+    return analyze_url(payload.url)

@@ -56,7 +56,7 @@
           <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
             Smart Phishing Detection System
           </h1>
-          <p class="text-xs text-slate-400">Web Server & Intelligent Mock Classifier Engine</p>
+          <p class="text-xs text-slate-400">Heuristic Lexical & Passive DNS/SSL Phishing Classifier</p>
         </div>
       </div>
 
@@ -114,15 +114,15 @@
         <!-- Quick Sample Badges -->
         <div class="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
           <span>Uji Coba Cepat:</span>
-          <button type="button" onclick="setSampleUrl('http://192.168.1.105/bank/login-verify.php')"
+          <button type="button" onclick="setSampleUrl('http://192.168.1.50/login-bca@verify.com')"
             class="px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 transition-colors">
-            🔴 Phishing (IP + Keywords)
+            🔴 Phishing (IP + @)
           </button>
-          <button type="button" onclick="setSampleUrl('http://contoh-aplikasi-phishing.com/verify')"
+          <button type="button" onclick="setSampleUrl('http://update-akun.login.verify.contoh-domain.com')"
             class="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 transition-colors">
-            🟡 Suspicious (HTTP / Keyword)
+            🟡 Suspicious (Subdomain + HTTP)
           </button>
-          <button type="button" onclick="setSampleUrl('https://portal.bankmandiri.co.id')"
+          <button type="button" onclick="setSampleUrl('https://www.google.com')"
             class="px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors">
             🟢 Safe (Legitimate)
           </button>
@@ -144,12 +144,15 @@
               </span>
               <span id="badgeScanId"
                 class="text-xs font-mono-code text-slate-400 px-2 py-1 rounded bg-slate-900/60 border border-slate-700/50"></span>
+              <span id="badgeTechStatus"
+                class="text-xs font-mono-code text-slate-300 px-2 py-1 rounded bg-slate-800 border border-slate-700"></span>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-xs text-slate-400">Target:</span>
               <a id="resultUrlLink" href="#" target="_blank" rel="noopener noreferrer"
                 class="text-sm font-mono-code font-medium text-slate-200 hover:text-blue-400 hover:underline break-all"></a>
             </div>
+            <p id="resultReasonText" class="text-xs text-slate-300 pt-1"></p>
           </div>
 
           <!-- Risk Score Meter Display -->
@@ -172,48 +175,96 @@
 
         <!-- Breakdown Grid Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <!-- Card: URL Length -->
+          <!-- Card 1: URL Length & Hyphen Count -->
           <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
-            <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <div id="iconLengthBox" class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
               <i data-lucide="ruler" class="w-5 h-5"></i>
             </div>
-            <div>
-              <p class="text-xs font-medium text-slate-400">Panjang URL</p>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Panjang URL & Tanda Hubung</p>
               <p id="featureUrlLength" class="text-base font-bold text-white mt-0.5">--</p>
-              <p id="featureUrlLengthHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+              <p id="featureHyphenHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
             </div>
           </div>
 
-          <!-- Card: IP Usage -->
+          <!-- Card 2: Host Anomalies (IP & @) -->
           <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
             <div id="iconIpBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
               <i data-lucide="network" class="w-5 h-5"></i>
             </div>
-            <div>
-              <p class="text-xs font-medium text-slate-400">Penggunaan IP Address</p>
-              <p id="featureHasIp" class="text-base font-bold text-white mt-0.5">--</p>
-              <p id="featureHasIpHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Anomali Host (IP & @)</p>
+              <p id="featureHostAnomaly" class="text-sm font-bold text-white mt-0.5">--</p>
+              <p id="featureHostnameHint" class="text-[11px] text-slate-400 mt-0.5 font-mono-code truncate"></p>
             </div>
           </div>
 
-          <!-- Card: HTTPS Status -->
+          <!-- Card 3: Subdomain & HTTPS Status -->
           <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
             <div id="iconHttpsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
               <i data-lucide="lock" class="w-5 h-5"></i>
             </div>
-            <div>
-              <p class="text-xs font-medium text-slate-400">Protokol Keamanan</p>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Subdomain & Protokol</p>
               <p id="featureHasHttps" class="text-base font-bold text-white mt-0.5">--</p>
-              <p id="featureHasHttpsHint" class="text-[11px] text-slate-500 mt-0.5"></p>
+              <p id="featureSubdomainHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
             </div>
           </div>
 
-          <!-- Card: Keywords Detected -->
+          <!-- Card 4: DNS & SSL Status -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconDnsSslBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="globe-lock" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Status DNS & Sertifikat SSL</p>
+              <p id="domainDnsSslStatus" class="text-sm font-bold text-white mt-0.5">--</p>
+              <p id="domainIpExpiryHint" class="text-[11px] text-slate-400 mt-0.5 font-mono-code truncate"></p>
+            </div>
+          </div>
+
+          <!-- Card 5: Domain Age (RDAP) -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconDomainAgeBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Usia Domain (RDAP)</p>
+              <p id="featureDomainAge" class="text-sm font-bold text-white mt-0.5">--</p>
+              <p id="featureDomainAgeHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
+            </div>
+          </div>
+
+          <!-- Card 6: Domain Similarity -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconSimilarityBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="copy-slash" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Kemiripan Domain Resmi</p>
+              <p id="featureSimilarity" class="text-sm font-bold text-white mt-0.5">--</p>
+              <p id="featureSimilarityHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
+            </div>
+          </div>
+
+          <!-- Card 7: URL Shortening -->
+          <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
+            <div id="iconShortenerBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+              <i data-lucide="Minimize-2" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-slate-400">Layanan URL Shortener</p>
+              <p id="featureShortener" class="text-sm font-bold text-white mt-0.5">--</p>
+              <p id="featureShortenerHint" class="text-[11px] text-slate-400 mt-0.5 truncate"></p>
+            </div>
+          </div>
+
+          <!-- Card 8: Suspicious Keywords -->
           <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800 flex items-start space-x-3">
             <div id="iconKeywordsBox" class="p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
               <i data-lucide="key-round" class="w-5 h-5"></i>
             </div>
-            <div>
+            <div class="min-w-0">
               <p class="text-xs font-medium text-slate-400">Kata Kunci Mencurigakan</p>
               <div id="featureKeywordsList" class="flex flex-wrap gap-1 mt-1 text-xs">--</div>
             </div>
@@ -320,14 +371,6 @@
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             CSV
           </button>
-
-          <!-- Reset / Clear Button -->
-          <button onclick="confirmResetHistory()"
-            class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 transition-colors"
-            title="Reset ke sampel bawaan">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            Reset
-          </button>
         </div>
       </div>
 
@@ -386,6 +429,16 @@
     const btnIcon = document.getElementById('btnIcon');
     const btnSpinner = document.getElementById('btnSpinner');
 
+    // Escape HTML to prevent XSS when displaying scanned URLs
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     // Quick sample loader
     function setSampleUrl(url) {
       urlInput.value = url;
@@ -398,8 +451,11 @@
         const response = await fetch(`${API_BASE}/health`, { method: 'GET' });
         if (response.ok) {
           const data = await response.json();
+          const backendType = data.storage && data.storage.backend === 'firestore'
+            ? 'Firestore'
+            : 'In-Memory';
           apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-          apiStatusText.textContent = 'API Connected';
+          apiStatusText.textContent = `API Connected (${backendType})`;
           apiStatusText.className = 'text-emerald-300 font-semibold';
           apiStatusBadge.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300';
         } else {
@@ -465,19 +521,22 @@
         return;
       }
 
-      tbody.innerHTML = items.map(item => `
+      tbody.innerHTML = items.map(item => {
+        const safeId = escapeHtml(item.scan_id);
+        const safeUrl = escapeHtml(item.url);
+        return `
         <tr class="hover:bg-slate-700/30 transition-colors">
           <td class="px-6 py-4 font-mono-code text-xs text-slate-400 whitespace-nowrap">
-            ${item.scan_id}
+            ${safeId}
           </td>
-          <td class="px-6 py-4 font-mono-code text-xs max-w-xs truncate text-slate-200" title="${item.url}">
-            ${item.url}
+          <td class="px-6 py-4 font-mono-code text-xs max-w-xs truncate text-slate-200" title="${safeUrl}">
+            ${safeUrl}
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
             ${getClassificationBadge(item.classification)}
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <span class="font-bold text-xs ${item.risk_score >= 80 ? 'text-rose-400' : (item.risk_score >= 40 ? 'text-amber-400' : 'text-emerald-400')}">
+            <span class="font-bold text-xs ${item.risk_score >= 60 ? 'text-rose-400' : (item.risk_score >= 30 ? 'text-amber-400' : 'text-emerald-400')}">
               ${item.risk_score}%
             </span>
           </td>
@@ -485,7 +544,8 @@
             ${formatDate(item.scanned_at)}
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     // Filter History Table based on search query & classification filter
@@ -545,22 +605,6 @@
       document.body.removeChild(link);
     }
 
-    // Confirm and Reset History to Default Sample scans
-    async function confirmResetHistory() {
-      if (!confirm('Apakah Anda yakin ingin mengatur ulang riwayat pemindaian ke data contoh default?')) {
-        return;
-      }
-      try {
-        const res = await fetch(`${API_BASE}/history/reset`, { method: 'POST' });
-        if (res.ok) {
-          await fetchStats();
-          await fetchHistory();
-        }
-      } catch (err) {
-        alert('Gagal mengatur ulang riwayat.');
-      }
-    }
-
     // Render Detailed Scan Result Banner
     function renderResult(data) {
       const section = document.getElementById('resultSection');
@@ -573,6 +617,16 @@
 
       // Populate basic info
       badgeScanId.textContent = data.scan_id;
+      const techBadge = document.getElementById('badgeTechStatus');
+      if (techBadge) {
+        techBadge.textContent = data.technical_status === 'complete'
+          ? 'Tech Check: Complete'
+          : 'Tech Check: Inconclusive';
+      }
+      const reasonEl = document.getElementById('resultReasonText');
+      if (reasonEl) {
+        reasonEl.textContent = data.classification_reason || '';
+      }
       resultUrlLink.textContent = data.url;
       resultUrlLink.href = data.url.startsWith('http') ? data.url : `http://${data.url}`;
       scoreValue.textContent = data.risk_score;
@@ -599,42 +653,107 @@
         scoreBar.className = 'h-full rounded-full transition-all duration-700 ease-out bg-emerald-500 shadow-sm shadow-emerald-500/50';
       }
 
-      // Feature: URL Length
+      // Feature 1: URL Length & Hyphen Count
+      const lengthBox = document.getElementById('iconLengthBox');
       document.getElementById('featureUrlLength').textContent = `${data.features.url_length} Karakter`;
-      document.getElementById('featureUrlLengthHint').textContent = data.features.url_length > 75
-        ? '⚠️ Terlalu panjang (>75)'
-        : '✓ Panjang normal';
+      document.getElementById('featureHyphenHint').textContent = `${data.features.hyphen_count} tanda hubung '-' pada host`;
+      if (data.features.url_length > 75 || data.features.hyphen_count >= 3) {
+        lengthBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      } else if (data.features.url_length > 54 || data.features.hyphen_count >= 1) {
+        lengthBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      } else {
+        lengthBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
 
-      // Feature: IP Usage
+      // Feature 2: Host Anomalies (IP & @)
       const ipBox = document.getElementById('iconIpBox');
-      if (data.features.has_ip) {
-        document.getElementById('featureHasIp').textContent = 'Terdeteksi IP';
-        document.getElementById('featureHasIpHint').textContent = '⚠️ Menghubungi IP langsung';
-        ipBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
-      } else {
-        document.getElementById('featureHasIp').textContent = 'Domain Valid';
-        document.getElementById('featureHasIpHint').textContent = '✓ Menggunakan nama host';
-        ipBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      }
+      const hasIp = data.features.has_ip === 1;
+      const hasAt = data.features.has_at === 1;
+      document.getElementById('featureHostAnomaly').textContent =
+        `IP: ${hasIp ? 'Ya' : 'Tidak'} | @: ${hasAt ? 'Ya' : 'Tidak'}`;
+      document.getElementById('featureHostnameHint').textContent =
+        `Host: ${data.domain_info ? data.domain_info.hostname : '-'}`;
+      ipBox.className = (hasIp || hasAt)
+        ? 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20'
+        : 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
 
-      // Feature: HTTPS Protocol
+      // Feature 3: Subdomain & HTTPS Protocol
       const httpsBox = document.getElementById('iconHttpsBox');
-      if (data.features.has_https) {
-        document.getElementById('featureHasHttps').textContent = 'HTTPS Aktif';
-        document.getElementById('featureHasHttpsHint').textContent = '✓ Enkripsi SSL aktif';
+      const isHttps = data.features.is_https === 1;
+      document.getElementById('featureHasHttps').textContent = isHttps ? 'HTTPS Aktif' : 'HTTP (Non-HTTPS)';
+      document.getElementById('featureSubdomainHint').textContent = `${data.features.subdomain_count} level subdomain`;
+      if (isHttps && data.features.subdomain_count < 2) {
         httpsBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      } else {
-        document.getElementById('featureHasHttps').textContent = 'HTTP (Insecure)';
-        document.getElementById('featureHasHttpsHint').textContent = '⚠️ Tidak terenkripsi';
+      } else if (!isHttps || data.features.subdomain_count >= 3) {
         httpsBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      } else {
+        httpsBox.className = 'p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20';
       }
 
-      // Feature: Keywords
+      // Feature 4: Passive DNS & SSL Status
+      const dnsSslBox = document.getElementById('iconDnsSslBox');
+      const dInfo = data.domain_info || { dns_resolved: false, ip_address: 'Unknown', ssl_status: 'Unknown', ssl_expiry: 'Unknown' };
+      document.getElementById('domainDnsSslStatus').textContent =
+        `DNS: ${dInfo.dns_resolved ? 'OK' : 'Gagal'} | SSL: ${dInfo.ssl_status}`;
+      document.getElementById('domainIpExpiryHint').textContent =
+        `IP: ${dInfo.ip_address} | Exp: ${dInfo.ssl_expiry}`;
+      if (dInfo.ssl_status === 'Invalid / Self-Signed' || dInfo.ssl_status === 'Expired') {
+        dnsSslBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      } else if (!dInfo.dns_resolved || dInfo.ssl_status === 'Unknown' || dInfo.ssl_status === 'Unavailable') {
+        dnsSslBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      } else {
+        dnsSslBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
+
+      // Feature 5: Domain Age (RDAP)
+      const ageBox = document.getElementById('iconDomainAgeBox');
+      const ageDays = data.features.domain_age_days;
+      const ageStatus = data.features.domain_age_status || 'unavailable';
+      if (typeof ageDays === 'number') {
+        document.getElementById('featureDomainAge').textContent = `${ageDays} Hari`;
+        document.getElementById('featureDomainAgeHint').textContent = dInfo.registration_date
+          ? `Terdaftar: ${dInfo.registration_date}`
+          : 'Sumber: RDAP';
+        ageBox.className = ageDays < 90
+          ? 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20'
+          : 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      } else {
+        document.getElementById('featureDomainAge').textContent = 'Unavailable';
+        document.getElementById('featureDomainAgeHint').textContent = `Status RDAP: ${ageStatus}`;
+        ageBox.className = 'p-2.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700';
+      }
+
+      // Feature 6: Domain Similarity
+      const simBox = document.getElementById('iconSimilarityBox');
+      if (data.features.similarity_detected) {
+        document.getElementById('featureSimilarity').textContent = `Mirip: ${data.features.similar_to_domain}`;
+        document.getElementById('featureSimilarityHint').textContent = `Skor kemiripan: ${Math.round((data.features.similarity_score || 0) * 100)}%`;
+        simBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      } else {
+        document.getElementById('featureSimilarity').textContent = 'Tidak Terdeteksi';
+        document.getElementById('featureSimilarityHint').textContent = 'Tidak menyerupai domain resmi';
+        simBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
+
+      // Feature 7: URL Shortener
+      const shortBox = document.getElementById('iconShortenerBox');
+      if (data.features.is_shortened) {
+        document.getElementById('featureShortener').textContent = 'Terdeteksi Shortener';
+        document.getElementById('featureShortenerHint').textContent = 'Tujuan akhir disembunyikan';
+        shortBox.className = 'p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      } else {
+        document.getElementById('featureShortener').textContent = 'URL Langsung';
+        document.getElementById('featureShortenerHint').textContent = 'Bukan layanan pemendek URL';
+        shortBox.className = 'p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      }
+
+      // Feature 8: Suspicious Keywords
       const keywordsContainer = document.getElementById('featureKeywordsList');
       const kwBox = document.getElementById('iconKeywordsBox');
-      if (data.features.suspicious_keywords_found && data.features.suspicious_keywords_found.length > 0) {
-        keywordsContainer.innerHTML = data.features.suspicious_keywords_found.map(kw =>
-          `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code border border-rose-500/30">${kw}</span>`
+      const kwList = data.features.suspicious_keywords_found || [];
+      if (kwList.length > 0) {
+        keywordsContainer.innerHTML = kwList.map(kw =>
+          `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono-code border border-rose-500/30">${escapeHtml(kw)}</span>`
         ).join('');
         kwBox.className = 'p-2.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
       } else {
@@ -648,7 +767,7 @@
         rulesList.innerHTML = data.rules_triggered.map(rule => `
           <li class="flex items-start space-x-2 text-slate-300">
             <span class="text-blue-400 mt-0.5 font-bold">&bull;</span>
-            <span class="font-mono-code text-xs">${rule}</span>
+            <span class="font-mono-code text-xs">${escapeHtml(rule)}</span>
           </li>
         `).join('');
       } else {
@@ -686,7 +805,13 @@
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.detail || 'Gagal menganalisis URL.');
+          let errMsg = 'Gagal menganalisis URL.';
+          if (typeof errData.detail === 'string') {
+            errMsg = errData.detail;
+          } else if (Array.isArray(errData.detail) && errData.detail.length > 0) {
+            errMsg = errData.detail.map(item => item.msg || JSON.stringify(item)).join('; ');
+          }
+          throw new Error(errMsg);
         }
 
         const data = await response.json();

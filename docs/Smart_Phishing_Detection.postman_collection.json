@@ -1,0 +1,392 @@
+{
+  "info": {
+    "name": "Smart Phishing Detection API v2",
+    "_postman_id": "9d8a5e72-7325-44be-99c1-phishingapi2026",
+    "description": "Koleksi pengujian API Backend Smart Phishing Detection System (Integrasi Algoritma Zikra, Validasi Ketat, Firestore, dan Proteksi Keamanan).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "admin_api_key",
+      "value": "change-this-to-a-strong-random-secret",
+      "type": "string"
+    },
+    {
+      "key": "last_scan_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check & Storage Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Service and classifier info present', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('ok');",
+              "    pm.expect(jsonData.classifier).to.eql('zikra-heuristic-dns-ssl');",
+              "    pm.expect(jsonData).to.have.property('storage');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "health"]
+        }
+      }
+    },
+    {
+      "name": "2. Analyze URL - SAFE (https://www.google.com)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Classification is SAFE with low risk_score', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.classification).to.eql('SAFE');",
+              "    pm.expect(jsonData.risk_score).to.be.below(30);",
+              "    pm.expect(jsonData.features.is_https).to.eql(1);",
+              "    pm.expect(jsonData).to.have.property('domain_info');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://www.google.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "analyze"]
+        }
+      }
+    },
+    {
+      "name": "3. Analyze URL - SUSPICIOUS (Subdomain + HTTP)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Classification is SUSPICIOUS or PHISHING', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(['SUSPICIOUS', 'PHISHING']).to.include(jsonData.classification);",
+              "    pm.expect(jsonData.risk_score).to.be.at.least(30);",
+              "    pm.expect(jsonData.features.subdomain_count).to.be.at.least(3);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"http://update-akun.login.verify.contoh-domain.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "analyze"]
+        }
+      }
+    },
+    {
+      "name": "4. Analyze URL - PHISHING (IP + @ symbol)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Classification is PHISHING and risk_score >= 60', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.classification).to.eql('PHISHING');",
+              "    pm.expect(jsonData.risk_score).to.be.at.least(60);",
+              "    pm.expect(jsonData.features.has_ip).to.eql(1);",
+              "    pm.expect(jsonData.features.has_at).to.eql(1);",
+              "    pm.collectionVariables.set('last_scan_id', jsonData.scan_id);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"http://192.168.1.50/login-bca@verify.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "analyze"]
+        }
+      }
+    },
+    {
+      "name": "5. Validation Error - Dangerous Scheme (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rejects javascript: scheme with 422', function () {",
+              "    pm.response.to.have.status(422);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"javascript:alert(1)\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "analyze"]
+        }
+      }
+    },
+    {
+      "name": "6. Security SSRF Guard - Metadata IP Blocked (422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Blocks cloud metadata IP 169.254.169.254 with 422', function () {",
+              "    pm.response.to.have.status(422);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"http://169.254.169.254/latest/meta-data/\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/analyze",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "analyze"]
+        }
+      }
+    },
+    {
+      "name": "7. Get Scan History List",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Returns array of scans', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/history?limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "history"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. Get Scan Detail by ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Returned scan_id matches requested scan_id', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.scan_id).to.eql(pm.collectionVariables.get('last_scan_id'));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/history/{{last_scan_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "history", "{{last_scan_id}}"]
+        }
+      }
+    },
+    {
+      "name": "9. History Invalid Scan ID Format (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid scan_id format returns 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/history/invalid-id-format",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "history", "invalid-id-format"]
+        }
+      }
+    },
+    {
+      "name": "10. Delete History Without Admin Key (403 Forbidden)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Unauthorized DELETE returns 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/history",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "history"]
+        }
+      }
+    },
+    {
+      "name": "11. Get Aggregate Statistics",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Statistics fields are present', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.all.keys('total_scans', 'safe_count', 'suspicious_count', 'phishing_count');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/v1/statistics",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "statistics"]
+        }
+      }
+    }
+  ]
+}

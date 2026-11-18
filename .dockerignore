@@ -11,3 +11,14 @@ venv/
 .env
 *.tar
 docker-compose.yml.backup
+*service-account*.json
+*firebase*.json
+*credentials*.json
+gcp-key*.json
+secrets/
+*.pem
+*.key
+docs/
+tests/
+*.sqlite3
+backend/data/

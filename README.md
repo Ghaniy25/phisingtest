@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 # Smart Phishing Detection System
-## Codebase & Server Architecture: Orang 2 (Web Server & Backend)
 
-Prototype standalone web server dan backend untuk sistem deteksi phishing cerdas, dilengkapi dengan **FastAPI**, **Mock Classification Engine**, **Single-Page HTML Dashboard**, dan **Konfigurasi Reverse Proxy Apache2**.
+Sistem deteksi URL phishing berbasis **FastAPI**, **Algoritma Klasifikasi Heuristik & DNS/SSL (Modul `Detection/`)**, **Google Cloud Firestore**, dan **Single-Page Dashboard (HTML5 + Tailwind CSS)** dengan dukungan deployment **Apache2** & **Docker**.
 
 ---
 
@@ -11,152 +9,88 @@ Prototype standalone web server dan backend untuk sistem deteksi phishing cerdas
 ```text
 .
 ├── backend/
-│   ├── main.py                     # Entry point FastAPI, CORS, & API v1 mounting
-│   ├── schemas.py                  # Pydantic schemas untuk request, response, dan stats
-│   ├── requirements.txt            # Dependensi Python
+│   ├── main.py                         # Entry point FastAPI, CORS, security headers & routing
+│   ├── schemas.py                      # Validasi Pydantic v2 (anti-SSRF & schema respons)
+│   ├── security.py                     # Rate limiter per IP, admin X-API-Key, & scan_id validator
+│   ├── requirements.txt                # Dependensi Python (FastAPI, Uvicorn, Pydantic, Firestore)
 │   ├── services/
 │   │   ├── __init__.py
-│   │   └── mock_classifier.py      # Heuristic & Intelligent Mock Classification Engine
+│   │   ├── classifier_service.py       # Integrasi algoritma Zikra (fitur leksikal + DNS/SSL)
+│   │   ├── firestore_service.py        # Integrasi Google Cloud Firestore + in-memory fallback
+│   │   └── mock_classifier.py          # Wrapper kompatibilitas menuju classifier_service
 │   └── routes/
 │       ├── __init__.py
-│       ├── health.py               # GET /api/v1/health
-│       ├── analyze.py              # POST /api/v1/analyze
-│       ├── history.py              # GET /api/v1/history & GET /api/v1/history/{scan_id}
-│       └── stats.py                # GET /api/v1/statistics
+│       ├── health.py                   # GET /api/v1/health
+│       ├── analyze.py                  # POST /api/v1/analyze
+│       ├── history.py                  # GET/DELETE /api/v1/history & GET /api/v1/history/{scan_id}
+│       └── stats.py                    # GET /api/v1/statistics
+├── Detection/                          # Modul klasifikasi Zikra (lexical features & passive DNS/SSL)
+│   ├── feature_extraction.py
+│   ├── domain_checker.py
+│   └── classifier.py
 ├── frontend/
-│   └── index.html                  # Responsive Single-Page Dashboard (Tailwind CSS + Lucide)
-├── apache/
-│   └── phishing-app.conf           # Konfigurasi Apache2 VirtualHost Reverse Proxy
-└── README.md                       # Dokumentasi dan panduan deployment
+│   └── index.html                      # Responsive Single-Page Dashboard
+├── docs/
+│   ├── API_AND_DEPLOYMENT_GUIDE.md     # Panduan API, keamanan, Postman & handover Firestore VPS
+│   └── Smart_Phishing_Detection.postman_collection.json
+├── tests/
+│   └── test_api.py                     # Unit test suite (classifier, validasi, Firestore fallback, security)
+├── phishing-app.conf                   # Konfigurasi Apache2 VirtualHost Reverse Proxy
+├── Dockerfile & docker-compose.prod.yml
+└── .env.example
 ```
 
 ---
 
-## 🚀 Panduan Menjalankan Secara Lokal (Tonight's Goal)
+## 🚀 Menjalankan Secara Lokal
 
 ### 1. Persiapan Environment Backend
-Pastikan Python 3.9+ sudah terpasang di sistem.
+Pastikan Python 3.9+ sudah terpasang:
 
 ```bash
-# Buat virtual environment (opsional namun disarankan)
 python -m venv venv
-
-# Aktivasi virtual environment:
 # Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
 # Linux / macOS:
 source venv/bin/activate
 
-# Install dependensi
 pip install -r backend/requirements.txt
 ```
 
 ### 2. Jalankan Server FastAPI
-Jalankan Uvicorn dari root direktori proyek:
-
 ```bash
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+python backend/main.py
 ```
+*(Atau `uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000`)*
 
-Backend akan aktif di:
-- **API Base URL**: `http://127.0.0.1:8000`
-- **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
-- **ReDoc**: `http://127.0.0.1:8000/redoc`
+* **Dashboard Web UI**: `http://127.0.0.1:8000/`
+* **Swagger Docs**: `http://127.0.0.1:8000/docs`
+* **Health Check**: `http://127.0.0.1:8000/api/v1/health`
 
-### 3. Membuka Frontend
-- Buka file `frontend/index.html` langsung di peramban web (browser).
-- Frontend secara otomatis melakukan pengecekan kesehatan API ke `http://127.0.0.1:8000/api/v1/health`.
-- Status badge di navbar akan berubah menjadi **🟢 API Connected**.
+*(Saat dijalankan secara lokal tanpa kredensial GCP, backend otomatis menggunakan `in_memory_fallback` storage. Ketika `GOOGLE_APPLICATION_CREDENTIALS` dan `FIRESTORE_PROJECT_ID` dikonfigurasi di `.env` / VPS, backend otomatis terhubung ke Google Cloud Firestore).*
 
 ---
 
-## 📡 Dokumentasi Endpoint API v1
+## 📡 Ringkasan Endpoint API v1
 
-| Metode | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| `GET` | `/api/v1/health` | Pengecekan status ketersediaan backend service |
-| `POST` | `/api/v1/analyze` | Menganalisis URL, menghitung skor risiko, dan memberikan klasifikasi |
-| `GET` | `/api/v1/history` | Mengambil daftar riwayat scan terbaru (opsional: `?limit=10`) |
-| `GET` | `/api/v1/history/{scan_id}` | Mengambil detail fitur spesifik dari satu sesi scan |
-| `GET` | `/api/v1/statistics` | Menghitung agregasi scan: Total, Safe, Suspicious, Phishing |
-
-### Contoh Request & Response POST `/api/v1/analyze`
-
-**Request Body:**
-```json
-{
-  "url": "http://192.168.1.105/login-verify.php"
-}
-```
-
-**Response Body:**
-```json
-{
-  "scan_id": "scan-e4b2a190",
-  "url": "http://192.168.1.105/login-verify.php",
-  "classification": "PHISHING",
-  "risk_score": 93,
-  "scanned_at": "2026-11-11T12:00:00.000000+00:00",
-  "features": {
-    "url_length": 38,
-    "has_ip": true,
-    "has_https": false,
-    "subdomain_count": 0,
-    "suspicious_keywords_found": ["login", "verify"],
-    "is_shortened": false,
-    "domain_age_days": 7,
-    "ssl_valid": false
-  },
-  "rules_triggered": [
-    "R-01: Direct IP address or high-risk keywords used",
-    "R-03: Multiple domain anomalies detected",
-    "R-06: Non-secure transmission protocol (HTTP)"
-  ]
-}
-```
+| Metode | Endpoint | Proteksi | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/health` | - | Status service, classifier, dan backend storage |
+| `POST` | `/api/v1/analyze` | Rate Limit + Validasi URL & SSRF | Analisis URL dengan modul `Detection/` & simpan hasil |
+| `GET` | `/api/v1/history` | Rate Limit (`?limit=1..100`) | Daftar riwayat pemindaian terbaru |
+| `GET` | `/api/v1/history/{scan_id}` | Rate Limit + Format `scan-xxxxxxxx` | Detail fitur & info domain untuk 1 sesi scan |
+| `DELETE` | `/api/v1/history` | Header `X-API-Key` Admin | Menghapus seluruh riwayat pemindaian |
+| `GET` | `/api/v1/statistics` | Rate Limit | Agregasi jumlah `SAFE`, `SUSPICIOUS`, `PHISHING` |
 
 ---
 
-## 🌐 Panduan Konfigurasi Apache2 (Production / Orang 3 Handover)
+## 🧪 Pengujian
 
-Untuk mendeploy frontend dan reverse-proxying API di server Linux (Ubuntu/Debian) dengan Apache2:
-
-1. **Aktifkan modul Apache yang diperlukan**:
+1. **Automated Unit Tests**:
    ```bash
-   sudo a2enmod proxy proxy_http headers rewrite
+   python -m unittest tests/test_api.py -v
    ```
-
-2. **Salin file frontend ke DocumentRoot**:
-   ```bash
-   sudo mkdir -p /var/www/html/phishing-app
-   sudo cp frontend/index.html /var/www/html/phishing-app/
-   ```
-
-3. **Salin konfigurasi VirtualHost**:
-   ```bash
-   sudo cp apache/phishing-app.conf /etc/apache2/sites-available/phishing-app.conf
-   sudo a2ensite phishing-app.conf
-   sudo a2dissite 000-default.conf # Opsional jika menggantikan default site
-   ```
-
-4. **Uji konfigurasi dan restart Apache**:
-   ```bash
-   sudo apache2ctl configtest
-   sudo systemctl restart apache2
-   ```
-
----
-
-## 🤝 Rencana Integrasi Tim
-
-1. **Orang 1 (Model Klasifikasi AI / ML)**:
-   - Ganti implementasi `analyze_url()` di `backend/services/mock_classifier.py` dengan model inference sesungguhnya (e.g., joblib/pickle model scikit-learn / PyTorch / ONNX).
-   - Skema API Pydantic di `backend/schemas.py` sudah dioptimalkan agar model Orang 1 dapat langsung di-plug tanpa mengubah antarmuka frontend.
-
-2. **Orang 3 (Infrastruktur Cloud & DevOps)**:
-   - File konfigurasi Apache `apache/phishing-app.conf` dan struktur backend siap dijadikan service systemd (`/etc/systemd/system/phishing-backend.service`) atau di-containerize menggunakan Docker/Kubernetes.
-
-=======
-# phisingtest
-blabalabala
->>>>>>> f322823c84f52a19d1a67b249f461676c878afe1
+2. **Pengujian Postman**:
+   Import koleksi [`docs/Smart_Phishing_Detection.postman_collection.json`](./docs/Smart_Phishing_Detection.postman_collection.json) ke Postman.
+3. **Panduan Lengkap & Setup VPS Firestore**:
+   Lihat [`docs/API_AND_DEPLOYMENT_GUIDE.md`](./docs/API_AND_DEPLOYMENT_GUIDE.md).

@@ -39,13 +39,22 @@ venv.bak/
 *.sublime-workspace
 *.sublime-project
 
-# Environment variables
+# Environment variables & Cloud Credentials (NEVER commit secrets/keys!)
 .env
 !.env.example
+*service-account*.json
+*firebase*.json
+*credentials*.json
+gcp-key*.json
+secrets/
+*.pem
+*.key
+!docs/*.postman_collection.json
 
 # Logs and databases
 *.log
 *.sqlite3
+backend/data/
 
 # Operating System Files
 Thumbs.db
@@ -53,4 +62,3 @@ ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
 .DS_Store
-
