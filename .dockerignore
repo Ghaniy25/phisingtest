@@ -1,0 +1,13 @@
+.git/
+.gitignore
+.github/
+.vscode/
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+.venv/
+venv/
+.env
+*.tar
+docker-compose.yml.backup
