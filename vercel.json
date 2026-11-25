@@ -4,5 +4,19 @@
   "buildCommand": "",
   "installCommand": "",
   "outputDirectory": "frontend",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://1c1e1018a6a6c4.app.lhr.life/api/v1/:path*"
+    },
+    {
+      "source": "/docs",
+      "destination": "https://1c1e1018a6a6c4.app.lhr.life/docs"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "https://1c1e1018a6a6c4.app.lhr.life/openapi.json"
+    }
+  ]
 }
