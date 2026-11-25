@@ -739,9 +739,13 @@
       return cleaned;
     }
 
-    // 1. Cek apakah ada parameter ?api=https://... di URL
+    // 1. Cek apakah ada parameter ?api=https://... di URL dan bersihkan address bar
     (function initBackendFromQuery() {
       try {
+        const saved = localStorage.getItem(STORAGE_KEY_BACKEND) || '';
+        if (saved.includes('.lhr.life')) {
+          localStorage.removeItem(STORAGE_KEY_BACKEND);
+        }
         const params = new URLSearchParams(window.location.search);
         const apiParam = params.get('api') || params.get('backend');
         if (apiParam) {
@@ -749,6 +753,7 @@
           if (norm) {
             localStorage.setItem(STORAGE_KEY_BACKEND, norm);
           }
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (_) {}
     })();
@@ -1002,26 +1007,36 @@
     }
 
     async function checkApiHealth() {
-      try {
-        const response = await fetch(`${API_BASE}/health`, { method: 'GET' });
-        if (response.ok) {
-          const data = await response.json();
-          const storageBackend = data.storage ? data.storage.backend : '';
-          apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
-          apiStatusText.textContent = 'API Online';
-          apiStatusText.className = 'text-emerald-300 font-semibold';
-          apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 cursor-pointer hover:ring-2 hover:ring-emerald-500/30 transition-all';
-          return true;
-        } else {
-          throw new Error('Bad Status');
-        }
-      } catch (err) {
-        apiStatusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
-        apiStatusText.textContent = 'API Offline';
-        apiStatusText.className = 'text-rose-400 font-semibold';
-        apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300 cursor-pointer hover:ring-2 hover:ring-rose-500/30 transition-all';
-        return false;
+      const candidates = [
+        API_BASE,
+        DEFAULT_BACKEND_ORIGIN ? `${normalizeBackendOrigin(DEFAULT_BACKEND_ORIGIN)}/api/v1` : '',
+        window.location.origin.includes('http') ? `${window.location.origin}/api/v1` : ''
+      ].filter((v, idx, arr) => v && arr.indexOf(v) === idx);
+
+      for (const candidate of candidates) {
+        try {
+          const response = await fetch(`${candidate}/health`, { method: 'GET' });
+          if (response.ok) {
+            await response.json();
+            if (API_BASE !== candidate) {
+              API_BASE = candidate;
+              try { localStorage.removeItem(STORAGE_KEY_BACKEND); } catch (_) {}
+              syncDocsLink();
+            }
+            apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
+            apiStatusText.textContent = 'API Online';
+            apiStatusText.className = 'text-emerald-300 font-semibold';
+            apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 cursor-pointer hover:ring-2 hover:ring-emerald-500/30 transition-all';
+            return true;
+          }
+        } catch (_) {}
       }
+
+      apiStatusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+      apiStatusText.textContent = 'API Offline';
+      apiStatusText.className = 'text-rose-400 font-semibold';
+      apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300 cursor-pointer hover:ring-2 hover:ring-rose-500/30 transition-all';
+      return false;
     }
 
     async function fetchStats() {

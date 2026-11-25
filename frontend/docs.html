@@ -54,11 +54,16 @@
 
     function resolveBackendOrigin() {
       try {
+        const oldSaved = localStorage.getItem(STORAGE_KEY_BACKEND) || '';
+        if (oldSaved.includes('.lhr.life')) {
+          localStorage.removeItem(STORAGE_KEY_BACKEND);
+        }
         const params = new URLSearchParams(window.location.search);
         const apiParam = params.get('api') || params.get('backend');
         if (apiParam) {
           const cleaned = apiParam.trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
           localStorage.setItem(STORAGE_KEY_BACKEND, cleaned);
+          window.history.replaceState({}, document.title, window.location.pathname);
           return cleaned;
         }
         const saved = localStorage.getItem(STORAGE_KEY_BACKEND);
