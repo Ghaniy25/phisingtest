@@ -728,7 +728,7 @@
     lucide.createIcons();
 
     const STORAGE_KEY_BACKEND = 'PHISHING_BACKEND_ORIGIN';
-    const DEFAULT_BACKEND_ORIGIN = 'https://protein-jean-batteries-sku.trycloudflare.com';
+    const DEFAULT_BACKEND_ORIGIN = 'https://saved-footage-galaxy-updates.trycloudflare.com';
 
     function normalizeBackendOrigin(raw) {
       if (!raw) return '';
@@ -742,10 +742,6 @@
     // 1. Cek apakah ada parameter ?api=https://... di URL dan bersihkan address bar
     (function initBackendFromQuery() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY_BACKEND) || '';
-        if (saved.includes('.lhr.life')) {
-          localStorage.removeItem(STORAGE_KEY_BACKEND);
-        }
         const params = new URLSearchParams(window.location.search);
         const apiParam = params.get('api') || params.get('backend');
         if (apiParam) {
@@ -754,6 +750,11 @@
             localStorage.setItem(STORAGE_KEY_BACKEND, norm);
           }
           window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+          const saved = localStorage.getItem(STORAGE_KEY_BACKEND) || '';
+          if (saved.includes('.lhr.life') || (saved.includes('.trycloudflare.com') && saved !== DEFAULT_BACKEND_ORIGIN)) {
+            localStorage.removeItem(STORAGE_KEY_BACKEND);
+          }
         }
       } catch (_) {}
     })();
@@ -1614,8 +1615,8 @@
       }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-      checkApiHealth();
+    window.addEventListener('DOMContentLoaded', async () => {
+      await checkApiHealth();
       fetchStats();
       fetchHistory();
     });

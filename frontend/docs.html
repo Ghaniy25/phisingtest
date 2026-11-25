@@ -50,12 +50,12 @@
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     const STORAGE_KEY_BACKEND = 'PHISHING_BACKEND_ORIGIN';
-    const DEFAULT_BACKEND_ORIGIN = 'https://protein-jean-batteries-sku.trycloudflare.com';
+    const DEFAULT_BACKEND_ORIGIN = 'https://saved-footage-galaxy-updates.trycloudflare.com';
 
     function resolveBackendOrigin() {
       try {
         const oldSaved = localStorage.getItem(STORAGE_KEY_BACKEND) || '';
-        if (oldSaved.includes('.lhr.life')) {
+        if (oldSaved.includes('.lhr.life') || (oldSaved.includes('.trycloudflare.com') && oldSaved !== DEFAULT_BACKEND_ORIGIN)) {
           localStorage.removeItem(STORAGE_KEY_BACKEND);
         }
         const params = new URLSearchParams(window.location.search);
