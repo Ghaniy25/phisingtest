@@ -139,17 +139,19 @@
             class="px-1.5 py-0.2 rounded-md text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/20">4</span>
         </button>
 
-        <a href="/docs" target="_blank" rel="noopener noreferrer"
+        <a id="apiDocsLink" href="/docs" target="_blank" rel="noopener noreferrer"
           class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.08] transition-colors">
           <i data-lucide="code-2" class="w-3.5 h-3.5 text-blue-400"></i>
           <span>API Docs</span>
         </a>
 
-        <div id="apiStatusBadge"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 border border-white/10 text-slate-300 transition-all duration-300">
+        <button type="button" id="apiStatusBadge" onclick="openApiConfigModal()"
+          title="Klik untuk mengatur URL Backend VPS / Cloudflare Tunnel"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 border border-white/10 text-slate-300 transition-all duration-300 cursor-pointer hover:ring-2 hover:ring-blue-500/30">
           <span id="apiStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span id="apiStatusText">Connecting...</span>
-        </div>
+          <i data-lucide="settings-2" class="w-3 h-3 text-slate-400 ml-0.5"></i>
+        </button>
       </div>
     </div>
   </header>
@@ -652,6 +654,72 @@
     </div>
   </div>
 
+  <!-- BACKEND API / TUNNEL CONFIGURATION MODAL -->
+  <div id="apiConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog"
+    aria-modal="true" aria-labelledby="apiConfigModalTitle">
+    <div class="fixed inset-0 bg-obsidian-950/80 backdrop-blur-sm transition-opacity" onclick="closeApiConfigModal()">
+    </div>
+    <div
+      class="relative w-full max-w-lg rounded-2xl glass-panel border border-white/[0.14] shadow-2xl p-6 space-y-5 animate-fade-in-up z-10">
+      <div class="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-4">
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/25 ring-1 ring-white/20 shrink-0">
+            <i data-lucide="server" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <h3 id="apiConfigModalTitle" class="text-base font-extrabold text-white tracking-tight">
+              Koneksi Server Backend (VPS / Tunnel)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Hubungkan Frontend Vercel ke Backend VPS Kampus via HTTPS Tunnel</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeApiConfigModal()"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+          aria-label="Tutup modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-3.5 rounded-xl bg-obsidian-950/90 border border-white/[0.08] space-y-1">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Endpoint Aktif Saat Ini</div>
+          <div id="currentApiBaseDisplay" class="text-xs font-mono text-emerald-300 break-all">-</div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="customApiUrlInput" class="block text-xs font-semibold text-slate-300">
+            URL Cloudflare Tunnel / Ngrok / Backend VPS
+          </label>
+          <input type="text" id="customApiUrlInput" spellcheck="false" autocomplete="off"
+            placeholder="https://xxxx-xxxx.trycloudflare.com"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/[0.12] focus:border-blue-500 focus:outline-none text-xs font-mono text-white placeholder-slate-500" />
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Masukkan URL HTTPS publik dari Cloudflare Tunnel (<code class="text-slate-300">cloudflared tunnel --url http://localhost:80</code>) di VPS kampus. Kosongkan jika mengakses langsung dari IP VPS atau menggunakan proxy <code class="text-slate-300">vercel.json</code>.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.07]">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="resetApiConfig()"
+              class="px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-colors cursor-pointer">
+              Reset Default
+            </button>
+            <button type="button" onclick="copyShareableApiLink()"
+              class="px-3 py-2 rounded-xl text-xs font-medium text-blue-300 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 transition-colors cursor-pointer inline-flex items-center gap-1.5">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <span>Salin Link Publik</span>
+            </button>
+          </div>
+          <button type="button" onclick="saveApiConfig()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors cursor-pointer shadow-md shadow-blue-600/20">
+            Simpan &amp; Hubungkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm"></div>
 
@@ -659,9 +727,53 @@
   <script>
     lucide.createIcons();
 
-    const API_BASE = window.location.origin.includes('http') && !window.location.origin.includes(':5500')
-      ? `${window.location.origin}/api/v1`
-      : 'http://127.0.0.1:8000/api/v1';
+    const STORAGE_KEY_BACKEND = 'PHISHING_BACKEND_ORIGIN';
+    const DEFAULT_BACKEND_ORIGIN = ''; // Isi URL tunnel tetap jika ada, misal: 'https://api-anda.trycloudflare.com'
+
+    function normalizeBackendOrigin(raw) {
+      if (!raw) return '';
+      let cleaned = String(raw).trim().replace(/\/+$/, '');
+      if (cleaned.endsWith('/api/v1')) {
+        cleaned = cleaned.slice(0, -7);
+      }
+      return cleaned;
+    }
+
+    // 1. Cek apakah ada parameter ?api=https://... di URL
+    (function initBackendFromQuery() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const apiParam = params.get('api') || params.get('backend');
+        if (apiParam) {
+          const norm = normalizeBackendOrigin(apiParam);
+          if (norm) {
+            localStorage.setItem(STORAGE_KEY_BACKEND, norm);
+          }
+        }
+      } catch (_) {}
+    })();
+
+    function resolveApiBase() {
+      try {
+        const saved = normalizeBackendOrigin(localStorage.getItem(STORAGE_KEY_BACKEND));
+        if (saved) return `${saved}/api/v1`;
+      } catch (_) {}
+      const def = normalizeBackendOrigin(DEFAULT_BACKEND_ORIGIN);
+      if (def) return `${def}/api/v1`;
+      return window.location.origin.includes('http') && !window.location.origin.includes(':5500')
+        ? `${window.location.origin}/api/v1`
+        : 'http://127.0.0.1:8000/api/v1';
+    }
+
+    let API_BASE = resolveApiBase();
+
+    function syncDocsLink() {
+      const docsEl = document.getElementById('apiDocsLink');
+      if (!docsEl) return;
+      const originBase = API_BASE.replace(/\/api\/v1$/, '');
+      docsEl.href = `${originBase}/docs`;
+    }
+    syncDocsLink();
 
     let rawHistoryData = [];
     let filteredHistoryData = [];
@@ -722,9 +834,89 @@
       }
     }
 
+    function openApiConfigModal() {
+      const modal = document.getElementById('apiConfigModal');
+      const display = document.getElementById('currentApiBaseDisplay');
+      const input = document.getElementById('customApiUrlInput');
+      if (display) display.textContent = API_BASE;
+      if (input) {
+        try {
+          input.value = localStorage.getItem(STORAGE_KEY_BACKEND) || DEFAULT_BACKEND_ORIGIN || '';
+        } catch (_) {
+          input.value = '';
+        }
+      }
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeApiConfigModal() {
+      const modal = document.getElementById('apiConfigModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
+
+    async function saveApiConfig() {
+      const input = document.getElementById('customApiUrlInput');
+      const raw = input ? input.value : '';
+      const norm = normalizeBackendOrigin(raw);
+      try {
+        if (norm) {
+          localStorage.setItem(STORAGE_KEY_BACKEND, norm);
+        } else {
+          localStorage.removeItem(STORAGE_KEY_BACKEND);
+        }
+      } catch (_) {}
+      API_BASE = resolveApiBase();
+      syncDocsLink();
+      const display = document.getElementById('currentApiBaseDisplay');
+      if (display) display.textContent = API_BASE;
+      closeApiConfigModal();
+      showToast(`Menghubungkan ke ${API_BASE}...`, 'info');
+      const ok = await checkApiHealth();
+      if (ok) {
+        await Promise.all([fetchStats(), fetchHistory()]);
+        showToast('Terhubung ke server Backend API!', 'success');
+      } else {
+        showToast('Backend belum merespons. Pastikan Tunnel / VPS aktif dan HTTPS valid.', 'error');
+      }
+    }
+
+    async function resetApiConfig() {
+      try {
+        localStorage.removeItem(STORAGE_KEY_BACKEND);
+      } catch (_) {}
+      const input = document.getElementById('customApiUrlInput');
+      if (input) input.value = '';
+      API_BASE = resolveApiBase();
+      syncDocsLink();
+      const display = document.getElementById('currentApiBaseDisplay');
+      if (display) display.textContent = API_BASE;
+      await checkApiHealth();
+      showToast('Koneksi API dikembalikan ke default.', 'info');
+    }
+
+    async function copyShareableApiLink() {
+      const input = document.getElementById('customApiUrlInput');
+      const norm = normalizeBackendOrigin(input ? input.value : '') || API_BASE.replace(/\/api\/v1$/, '');
+      const shareUrl = `${window.location.origin}${window.location.pathname}?api=${encodeURIComponent(norm)}`;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Link publik dengan parameter ?api= berhasil disalin!', 'success');
+      } catch (_) {
+        showToast(shareUrl, 'info');
+      }
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeTeamModal();
+        closeApiConfigModal();
       }
     });
 
@@ -814,7 +1006,7 @@
           apiStatusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
           apiStatusText.textContent = 'API Online';
           apiStatusText.className = 'text-emerald-300 font-semibold';
-          apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300';
+          apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 cursor-pointer hover:ring-2 hover:ring-emerald-500/30 transition-all';
           return true;
         } else {
           throw new Error('Bad Status');
@@ -823,7 +1015,7 @@
         apiStatusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
         apiStatusText.textContent = 'API Offline';
         apiStatusText.className = 'text-rose-400 font-semibold';
-        apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300';
+        apiStatusBadge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-rose-950/60 border border-rose-500/30 text-rose-300 cursor-pointer hover:ring-2 hover:ring-rose-500/30 transition-all';
         return false;
       }
     }
