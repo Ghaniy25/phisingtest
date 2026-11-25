@@ -12,11 +12,7 @@
     },
     {
       "source": "/docs",
-      "destination": "https://e2194a311fcf50.app.lhr.life/docs"
-    },
-    {
-      "source": "/openapi.json",
-      "destination": "https://e2194a311fcf50.app.lhr.life/openapi.json"
+      "destination": "/docs.html"
     }
   ]
 }

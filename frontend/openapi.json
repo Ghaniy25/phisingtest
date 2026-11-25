@@ -1,0 +1,757 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Smart Phishing Detection API",
+    "description": "Web Server & Zikra Heuristic Phishing Classifier Backend with Firestore Integration",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Backend & Storage Health Check",
+        "description": "Health check endpoint reporting service readiness, classifier engine, and storage backend.",
+        "operationId": "get_health_status_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analyze": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "summary": "Analyze URL for Phishing Threats",
+        "description": "Analyze a validated URL using Zikra's feature extraction and passive DNS/SSL engine.",
+        "operationId": "analyze_target_url_api_v1_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/URLCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/URLCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Get Recent Scan History with Pagination",
+        "description": "Retrieve scan history sorted by newest first with limit and offset pagination.",
+        "operationId": "get_scan_history_api_v1_history_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum number of items to return",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Maximum number of items to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 0,
+              "description": "Number of items to skip for pagination",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of items to skip for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/URLCheckResponse"
+                  },
+                  "title": "Response Get Scan History Api V1 History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Clear Scan History (Admin Only)",
+        "description": "Clear all records from storage (requires X-API-Key administrator header).",
+        "operationId": "clear_history_api_v1_history_delete",
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history/{scan_id}": {
+      "get": {
+        "tags": [
+          "History"
+        ],
+        "summary": "Get Scan Details by ID",
+        "description": "Retrieve complete feature details and verdict for a specific scan ID.",
+        "operationId": "get_scan_by_id_api_v1_history__scan_id__get",
+        "parameters": [
+          {
+            "name": "scan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/URLCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/statistics": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Get Aggregate Phishing Statistics",
+        "description": "Dynamically aggregate total, safe, suspicious, and phishing scan counts.",
+        "operationId": "get_statistics_api_v1_statistics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Serve Dashboard",
+        "description": "Serve the single-page frontend application or API overview fallback.",
+        "operationId": "serve_dashboard__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "tags": [
+          "Root"
+        ],
+        "summary": "Api Info",
+        "description": "API metadata and endpoints index.",
+        "operationId": "api_info_api_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DomainInfo": {
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "title": "Hostname",
+            "description": "Extracted domain hostname"
+          },
+          "registrable_domain": {
+            "type": "string",
+            "title": "Registrable Domain",
+            "description": "Base registrable domain",
+            "default": ""
+          },
+          "dns_resolved": {
+            "type": "boolean",
+            "title": "Dns Resolved",
+            "description": "True if DNS resolution succeeded to a safe public IP"
+          },
+          "ip_address": {
+            "type": "string",
+            "title": "Ip Address",
+            "description": "Resolved IP address or Unknown"
+          },
+          "ssl_status": {
+            "type": "string",
+            "title": "Ssl Status",
+            "description": "SSL certificate status (Valid, Invalid / Self-Signed, Expired, Unavailable, Error)"
+          },
+          "ssl_valid": {
+            "type": "boolean",
+            "title": "Ssl Valid",
+            "description": "True if SSL certificate is valid",
+            "default": false
+          },
+          "ssl_expiry": {
+            "type": "string",
+            "title": "Ssl Expiry",
+            "description": "SSL certificate expiry date (YYYY-MM-DD) or Unknown"
+          },
+          "domain_age_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Age Days",
+            "description": "Domain age in days from RDAP or null"
+          },
+          "domain_age_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable",
+              "error"
+            ],
+            "title": "Domain Age Status",
+            "description": "RDAP domain age availability status",
+            "default": "unavailable"
+          },
+          "registration_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Date",
+            "description": "ISO registration date from RDAP if available"
+          },
+          "ssrf_blocked": {
+            "type": "boolean",
+            "title": "Ssrf Blocked",
+            "description": "True if outbound connection was blocked by SSRF protection",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "hostname",
+          "dns_resolved",
+          "ip_address",
+          "ssl_status",
+          "ssl_expiry"
+        ],
+        "title": "DomainInfo"
+      },
+      "FeatureDetails": {
+        "properties": {
+          "url_length": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Url Length",
+            "description": "Total character count of the URL"
+          },
+          "is_long_url": {
+            "type": "boolean",
+            "title": "Is Long Url",
+            "description": "True if URL length exceeds 75 chars",
+            "default": false
+          },
+          "has_ip": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Has Ip",
+            "description": "1 if IPv4/IPv6 address is used as host, else 0"
+          },
+          "has_at": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Has At",
+            "description": "1 if '@' character is present in URL, else 0"
+          },
+          "hyphen_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Hyphen Count",
+            "description": "Count of '-' characters in hostname"
+          },
+          "percent_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Percent Count",
+            "description": "Count of '%' percent-encoding chars in URL",
+            "default": 0
+          },
+          "special_char_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Special Char Count",
+            "description": "Total relevant special characters (@, -, %, _, ?, =, &)",
+            "default": 0
+          },
+          "subdomain_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Subdomain Count",
+            "description": "Number of subdomain levels excluding public suffix"
+          },
+          "registrable_domain": {
+            "type": "string",
+            "title": "Registrable Domain",
+            "description": "Extracted registrable base domain",
+            "default": ""
+          },
+          "is_https": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Is Https",
+            "description": "1 if HTTPS protocol is used, else 0"
+          },
+          "has_https": {
+            "type": "boolean",
+            "title": "Has Https",
+            "description": "Boolean flag for HTTPS usage",
+            "default": false
+          },
+          "domain_age_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Age Days",
+            "description": "Actual domain age in days from RDAP, or null if unavailable"
+          },
+          "domain_age_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable",
+              "error"
+            ],
+            "title": "Domain Age Status",
+            "description": "Status of domain age lookup",
+            "default": "unavailable"
+          },
+          "suspicious_keywords_found": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suspicious Keywords Found",
+            "description": "List of suspicious keywords detected in the URL"
+          },
+          "is_shortened": {
+            "type": "boolean",
+            "title": "Is Shortened",
+            "description": "True if hostname belongs to a known URL shortener service",
+            "default": false
+          },
+          "similarity_detected": {
+            "type": "boolean",
+            "title": "Similarity Detected",
+            "description": "True if hostname resembles an official protected domain with altered spelling",
+            "default": false
+          },
+          "similar_to_domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Similar To Domain",
+            "description": "Official protected domain that this hostname resembles"
+          },
+          "similarity_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Similarity Score",
+            "description": "Normalized similarity score (0.0 - 1.0)",
+            "default": 0.0
+          },
+          "ssl_valid": {
+            "type": "boolean",
+            "title": "Ssl Valid",
+            "description": "True only if active SSL certificate was verified as valid",
+            "default": false
+          },
+          "ssl_status": {
+            "type": "string",
+            "title": "Ssl Status",
+            "description": "SSL status: valid, invalid, expired, unavailable, or error",
+            "default": "unavailable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url_length",
+          "has_ip",
+          "has_at",
+          "hyphen_count",
+          "subdomain_count",
+          "is_https"
+        ],
+        "title": "FeatureDetails"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "StatsResponse": {
+        "properties": {
+          "total_scans": {
+            "type": "integer",
+            "title": "Total Scans"
+          },
+          "safe_count": {
+            "type": "integer",
+            "title": "Safe Count"
+          },
+          "suspicious_count": {
+            "type": "integer",
+            "title": "Suspicious Count"
+          },
+          "phishing_count": {
+            "type": "integer",
+            "title": "Phishing Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_scans",
+          "safe_count",
+          "suspicious_count",
+          "phishing_count"
+        ],
+        "title": "StatsResponse"
+      },
+      "URLCheckRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 4,
+            "title": "Url",
+            "description": "Target URL to be analyzed for phishing indicators"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "URLCheckRequest"
+      },
+      "URLCheckResponse": {
+        "properties": {
+          "scan_id": {
+            "type": "string",
+            "title": "Scan Id",
+            "description": "Unique identifier for this scan session"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "The analyzed URL"
+          },
+          "url_length": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Url Length",
+            "description": "Top-level URL character length"
+          },
+          "has_ip": {
+            "type": "boolean",
+            "title": "Has Ip",
+            "description": "Top-level boolean flag for IP host usage"
+          },
+          "has_https": {
+            "type": "boolean",
+            "title": "Has Https",
+            "description": "Top-level boolean flag for HTTPS protocol"
+          },
+          "domain_age": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Age",
+            "description": "Top-level domain age in days (null if unavailable)"
+          },
+          "ssl_valid": {
+            "type": "boolean",
+            "title": "Ssl Valid",
+            "description": "Top-level boolean flag for SSL certificate validity"
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "SAFE",
+              "SUSPICIOUS",
+              "PHISHING"
+            ],
+            "title": "Classification",
+            "description": "Threat classification status"
+          },
+          "risk_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "description": "Rule-based risk score between 0 and 100"
+          },
+          "technical_status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "inconclusive"
+            ],
+            "title": "Technical Status",
+            "description": "Whether technical verification (DNS, SSL, RDAP) succeeded completely or was inconclusive",
+            "default": "complete"
+          },
+          "classification_reason": {
+            "type": "string",
+            "title": "Classification Reason",
+            "description": "Clear human-readable explanation of why this classification was assigned",
+            "default": ""
+          },
+          "scanned_at": {
+            "type": "string",
+            "title": "Scanned At",
+            "description": "ISO 8601 formatted scan timestamp"
+          },
+          "features": {
+            "$ref": "#/components/schemas/FeatureDetails",
+            "description": "All 10 extracted phishing detection features"
+          },
+          "domain_info": {
+            "$ref": "#/components/schemas/DomainInfo",
+            "description": "Passive DNS, RDAP domain age, and SSL certificate analysis"
+          },
+          "rules_triggered": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rules Triggered",
+            "description": "List of PRD rules (R-01..R-05) triggered"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scan_id",
+          "url",
+          "url_length",
+          "has_ip",
+          "has_https",
+          "ssl_valid",
+          "classification",
+          "risk_score",
+          "scanned_at",
+          "features",
+          "domain_info"
+        ],
+        "title": "URLCheckResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

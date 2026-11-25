@@ -770,8 +770,12 @@
     function syncDocsLink() {
       const docsEl = document.getElementById('apiDocsLink');
       if (!docsEl) return;
-      const originBase = API_BASE.replace(/\/api\/v1$/, '');
-      docsEl.href = `${originBase}/docs`;
+      if (window.location.hostname.endsWith('.vercel.app')) {
+        docsEl.href = '/docs';
+      } else {
+        const originBase = API_BASE.replace(/\/api\/v1$/, '');
+        docsEl.href = `${originBase}/docs`;
+      }
     }
     syncDocsLink();
 

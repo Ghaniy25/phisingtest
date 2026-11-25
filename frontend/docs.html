@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Phishing Detection API - Swagger UI</title>
+  <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+  <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png" />
+  <style>
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+    .topbar-banner {
+      background: #090E1C;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 12px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .topbar-banner a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .topbar-banner code {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar-banner">
+    <div>
+      <strong>Smart Phishing Detection API (Swagger UI)</strong> &bull; Target Backend Server:
+      <code id="activeServerLabel">Memuat...</code>
+    </div>
+    <a href="/">&larr; Kembali ke Dashboard</a>
+  </div>
+  <div id="swagger-ui"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    const STORAGE_KEY_BACKEND = 'PHISHING_BACKEND_ORIGIN';
+    const DEFAULT_BACKEND_ORIGIN = 'https://e2194a311fcf50.app.lhr.life';
+
+    function resolveBackendOrigin() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const apiParam = params.get('api') || params.get('backend');
+        if (apiParam) {
+          const cleaned = apiParam.trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+          localStorage.setItem(STORAGE_KEY_BACKEND, cleaned);
+          return cleaned;
+        }
+        const saved = localStorage.getItem(STORAGE_KEY_BACKEND);
+        if (saved) return saved.trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+      } catch (_) {}
+      if (window.location.hostname.includes('10.33.109.93') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return window.location.origin;
+      }
+      return DEFAULT_BACKEND_ORIGIN;
+    }
+
+    const backendOrigin = resolveBackendOrigin();
+    document.getElementById('activeServerLabel').textContent = backendOrigin;
+
+    fetch('/openapi.json')
+      .then((res) => res.json())
+      .then((spec) => {
+        spec.servers = [
+          {
+            url: backendOrigin,
+            description: 'Campus VPS FastAPI Backend (Active Tunnel)'
+          },
+          {
+            url: '/',
+            description: 'Same-Origin / Vercel Rewrite Proxy'
+          }
+        ];
+        SwaggerUIBundle({
+          spec: spec,
+          dom_id: '#swagger-ui',
+          layout: 'BaseLayout',
+          deepLinking: true,
+          showExtensions: true,
+          showCommonExtensions: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIBundle.SwaggerUIStandalonePreset
+          ]
+        });
+      });
+  </script>
+</body>
+
+</html>
