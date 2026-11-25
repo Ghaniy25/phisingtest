@@ -28,8 +28,13 @@ def _get_sqlite_path() -> str:
         if custom != ":memory:":
             Path(custom).parent.mkdir(parents=True, exist_ok=True)
         return custom
-    DEFAULT_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return str(DEFAULT_SQLITE_PATH)
+    if os.getenv("VERCEL"):
+        return "/tmp/local_history.sqlite3"
+    try:
+        DEFAULT_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        return str(DEFAULT_SQLITE_PATH)
+    except OSError:
+        return "/tmp/local_history.sqlite3"
 
 
 def _init_sqlite_table(conn: sqlite3.Connection) -> None:
